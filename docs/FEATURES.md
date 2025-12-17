@@ -161,7 +161,6 @@ A unified workspace for creating, editing, and previewing content alongside your
 | Shared Workspaces | Team-accessible projects and conversations. |
 | Roles & Permissions | Admin, member, and viewer access levels. |
 | Admin Console | Manage team settings, users, and policies. |
-| Usage Analytics | Track AI usage across the team. |
 | SSO/SAML | Enterprise single sign-on integration. |
 | Group Chats | Multiple team members chatting with AI together in real-time. |
 
