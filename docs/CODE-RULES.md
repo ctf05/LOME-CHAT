@@ -6,13 +6,7 @@ Coding standards for all contributors (human and AI).
 
 ## Core Principles
 
-### Production-Ready Always
-- Every commit must be deployable
-- No TODOs, FIXMEs, or placeholder code
-- No "temporary" solutions or shortcuts
-- If it's not ready, don't commit it
-
-### 100% Test Coverage
+### 95% Test Coverage
 - No exceptions
 - Tests written before or with implementation
 - No skipped or commented tests
@@ -157,43 +151,6 @@ Coding standards for all contributors (human and AI).
 - Hardcoded version numbers
 - Specific timing estimates
 - Ephemeral values (container IDs, hashes)
-
----
-
-## Git
-
-### Commits
-- Conventional Commits format
-- One logical change per commit
-- Explain why, not what
-- Reference issues where applicable
-
-### Branches
-- Branch from main
-- Keep branches short-lived (<3 days)
-- Delete after merge
-- Rebase before PR
-
-### PRs
-- All CI checks must pass
-- 100% coverage maintained
-- Description explains what and why
-
----
-
-## Forbidden
-
-- Skip tests
-- Commit to main directly
-- Use `var`
-- Use `console.log` in production
-- Modify production database manually
-- Copy-paste instead of abstracting
-- Functions >50 lines
-- Files >300 lines
-- Circular dependencies
-- Mutate function parameters
-- Return undefined for missing data (use null)
 
 ---
 

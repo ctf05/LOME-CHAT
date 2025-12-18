@@ -193,13 +193,7 @@ Never fix bugs without a test.
 ## Documentation Access
 
 ### Read-Only (Cannot Edit Without Permission)
-- All `.md` files in `docs/`
-- `TECH-STACK.md`
-- `CODE-RULES.md`
-- `AGENT-RULES.md`
-- `README.md`
-- `LICENSE`
-- `CLA.md`
+- All `.md` files
 
 ### If Documentation Is Outdated
 1. Note it in your response
@@ -283,7 +277,7 @@ Before completing any task:
 - [ ] Output pristine (no errors, warnings)
 - [ ] Mocks only where unavoidable
 - [ ] Edge cases and errors covered
-- [ ] 100% coverage maintained
+- [ ] coverage maintained
 
 Can't check all boxes? You skipped something. Start over.
 
@@ -310,7 +304,7 @@ After each task, provide:
 - [ ] Minimal code written to pass
 
 ## Coverage
-Before: X% → After: 100% ✓
+Before: X% → After: Y% ✓
 
 ## Concerns
 [Anything needing human input]
@@ -330,44 +324,3 @@ Before: X% → After: 100% ✓
 5. Request human input
 
 Do not proceed with uncertainty. Ask.
-
----
-
-## Forbidden
-
-- Modify documentation without permission
-- Make architecture decisions
-- Write code before test
-- Write test after implementation
-- Skip verifying test failure
-- Keep code written before test as "reference"
-- Commit with <100% coverage
-- Use `any` without justification
-- Bypass type-safe wrappers
-- Ignore failing tests
-- Comment out tests
-- Use TODO/FIXME comments
-- Invent new patterns
-- Add packages without approval
-- Rationalize skipping TDD "just this once"
-
----
-
-## Success Criteria
-
-- ✅ All tests pass
-- ✅ 100% coverage
-- ✅ TDD cycle followed for every change
-- ✅ Watched every test fail before implementing
-- ✅ Follows established patterns
-- ✅ Type safety preserved
-- ✅ No architecture violations
-- ✅ Human can review and understand changes
-
----
-
-## Remember
-
-Quality over speed. TDD is not optional. When in doubt, ask.
-
-You implement—you don't design. Delete code written before tests—no exceptions.
