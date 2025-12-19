@@ -153,7 +153,25 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 7: Frontend Foundation
+## Phase 7: Test Factories
+
+**Purpose:** Create factories for TDD from the start.
+
+**Tech Stack Addition:** fishery, @faker-js/faker
+
+- [ ] Install fishery and @faker-js/faker in `packages/db`
+- [ ] Create base factory helpers in `packages/db/factories/base.ts`
+- [ ] Create factories for each entity:
+    - [ ] `packages/db/factories/user.ts`
+    - [ ] `packages/db/factories/conversation.ts`
+    - [ ] `packages/db/factories/message.ts`
+    - [ ] `packages/db/factories/project.ts`
+- [ ] Export all factories from `packages/db/factories/index.ts`
+- [ ] Test factories create valid records
+
+---
+
+## Phase 8: Frontend Foundation
 
 **Purpose:** Scaffold the main web application.
 
@@ -176,7 +194,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 8: UI Components
+## Phase 9: UI Components
 
 **Purpose:** Set up component library with shadcn/ui.
 
@@ -206,7 +224,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 9: State Management
+## Phase 10: State Management
 
 **Purpose:** Configure client and server state management.
 
@@ -223,7 +241,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 10: Backend Foundation
+## Phase 11: Backend Foundation
 
 **Purpose:** Scaffold the API application.
 
@@ -253,7 +271,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 11: Early Cloud Deployment
+## Phase 12: Early Cloud Deployment
 
 **Purpose:** Verify local code actually deploys to cloud before building more features.
 
@@ -271,7 +289,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 12: Basic CI Pipeline
+## Phase 13: Basic CI Pipeline
 
 **Purpose:** Establish CI early to catch issues continuously.
 
@@ -288,7 +306,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 13: Local Development Environment
+## Phase 14: Local Development Environment
 
 **Purpose:** Create seamless local development experience.
 
@@ -309,7 +327,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 14: Environment Management
+## Phase 15: Environment Management
 
 **Purpose:** Set up typed environment variable handling.
 
@@ -323,7 +341,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 15: Authentication
+## Phase 16: Authentication
 
 **Purpose:** Implement user authentication.
 
@@ -350,7 +368,24 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 16: Basic Chat UI
+## Phase 17: Developer Personas
+
+**Purpose:** Enable fast login switching for dev and pre-authenticated E2E tests.
+
+- [ ] Define personas in `packages/shared/personas.ts` (admin, member, viewer, new user)
+- [ ] Create `scripts/seed.ts` with persona users and sample data
+- [ ] Add `pnpm db:seed` script to root package.json
+- [ ] Create dev-only persona page at `apps/web/routes/_dev/personas.tsx`
+- [ ] Gate route with `import.meta.env.DEV` for dead code elimination
+- [ ] Implement instant login on persona card click
+- [ ] Create Playwright auth fixture in `e2e/fixtures/auth.ts`
+- [ ] Generate storageState per persona on each CI run
+- [ ] Test persona page login flow
+- [ ] Test E2E with pre-authenticated personas
+
+---
+
+## Phase 18: Basic Chat UI
 
 **Purpose:** Build the core chat interface (no AI yet).
 
@@ -373,7 +408,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 17: OpenRouter Integration
+## Phase 19: OpenRouter Integration
 
 **Purpose:** Connect to OpenRouter for LLM access.
 
@@ -395,7 +430,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 18: Streaming Responses
+## Phase 20: Streaming Responses
 
 **Purpose:** Implement Server-Sent Events for streaming LLM responses.
 
@@ -410,7 +445,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 19: OpenRouter Mocks
+## Phase 21: OpenRouter Mocks
 
 **Purpose:** Create mock responses for local development.
 
@@ -427,7 +462,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 20: Model Switching
+## Phase 22: Model Switching
 
 **Purpose:** Allow changing models mid-conversation.
 
@@ -443,7 +478,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 21: Local-Only Mode (PGlite)
+## Phase 23: Local-Only Mode (PGlite)
 
 **Purpose:** Implement conversations that stay in browser only.
 
@@ -461,7 +496,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 22: Conversation Management
+## Phase 24: Conversation Management
 
 **Purpose:** Implement conversation organization features.
 
@@ -479,7 +514,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 23: Conversation Forking
+## Phase 25: Conversation Forking
 
 **Purpose:** Allow branching conversations from any point.
 
@@ -495,7 +530,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 24: Document Panel - Basic
+## Phase 26: Document Panel - Basic
 
 **Purpose:** Create the unified document panel structure.
 
@@ -512,7 +547,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 25: Document Panel - Live Preview
+## Phase 27: Document Panel - Live Preview
 
 **Purpose:** Add live rendering for HTML/React content.
 
@@ -531,7 +566,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 26: Document Panel - Versions
+## Phase 28: Document Panel - Versions
 
 **Purpose:** Implement document versioning and history.
 
@@ -548,7 +583,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 27: Context Management
+## Phase 29: Context Management
 
 **Purpose:** Implement context awareness features.
 
@@ -564,7 +599,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 28: Response Features
+## Phase 30: Response Features
 
 **Purpose:** Implement response manipulation features.
 
@@ -579,7 +614,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 29: Testing Additions
+## Phase 31: Testing Additions
 
 **Purpose:** Add comprehensive test coverage for all implemented features.
 
@@ -597,7 +632,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 30: Redis & Rate Limiting
+## Phase 32: Redis & Rate Limiting
 
 **Purpose:** Add caching and rate limiting infrastructure.
 
@@ -624,7 +659,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 31: Storage Setup
+## Phase 33: Storage Setup
 
 **Purpose:** Add object storage for files.
 
@@ -651,7 +686,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 32: File Upload - Basic
+## Phase 34: File Upload - Basic
 
 **Purpose:** Implement basic file upload functionality.
 
@@ -670,7 +705,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 33: File Analysis - Documents
+## Phase 35: File Analysis - Documents
 
 **Purpose:** Analyze uploaded document files.
 
@@ -688,7 +723,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 34: File Analysis - Images
+## Phase 36: File Analysis - Images
 
 **Purpose:** Analyze uploaded images with vision models.
 
@@ -704,7 +739,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 35: Storage Quota
+## Phase 37: Storage Quota
 
 **Purpose:** Implement dynamic storage limits.
 
@@ -719,7 +754,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 36: Compute Setup
+## Phase 38: Compute Setup
 
 **Purpose:** Set up server-side code execution.
 
@@ -746,7 +781,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 37: Code Execution - Backend
+## Phase 39: Code Execution - Backend
 
 **Purpose:** Implement Python and JavaScript execution.
 
@@ -764,7 +799,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 38: Document Creation
+## Phase 40: Document Creation
 
 **Purpose:** Generate downloadable document files.
 
@@ -782,7 +817,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 39: File Handling - Advanced
+## Phase 41: File Handling - Advanced
 
 **Purpose:** Implement remaining file handling features.
 
@@ -797,7 +832,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 40: Content Publishing
+## Phase 42: Content Publishing
 
 **Purpose:** Allow publishing documents to public URLs.
 
@@ -814,7 +849,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 41: Payments Setup
+## Phase 43: Payments Setup
 
 **Purpose:** Implement payment processing.
 
@@ -842,7 +877,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 42: Credit System
+## Phase 44: Credit System
 
 **Purpose:** Implement usage tracking and billing.
 
@@ -859,7 +894,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 43: Backups
+## Phase 45: Backups
 
 **Purpose:** Implement disaster recovery.
 
@@ -888,7 +923,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 44: Observability - Error Tracking
+## Phase 46: Observability - Error Tracking
 
 **Purpose:** Add error tracking and monitoring.
 
@@ -910,7 +945,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 45: Observability - Analytics
+## Phase 47: Observability - Analytics
 
 **Purpose:** Add product analytics and feature flags.
 
@@ -938,7 +973,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 46: Observability - Logs
+## Phase 48: Observability - Logs
 
 **Purpose:** Add structured logging.
 
@@ -962,7 +997,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 47: Memory System
+## Phase 49: Memory System
 
 **Purpose:** Implement cross-session memory.
 
@@ -980,7 +1015,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 48: Custom Instructions
+## Phase 50: Custom Instructions
 
 **Purpose:** Allow persistent user preferences.
 
@@ -996,7 +1031,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 49: Projects - Basic
+## Phase 51: Projects - Basic
 
 **Purpose:** Implement project organization.
 
@@ -1011,7 +1046,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 50: Projects - Files & Knowledge
+## Phase 52: Projects - Files & Knowledge
 
 **Purpose:** Add project file storage and knowledge base.
 
@@ -1027,7 +1062,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 51: Projects - Sharing
+## Phase 53: Projects - Sharing
 
 **Purpose:** Allow sharing projects with others.
 
@@ -1042,7 +1077,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 52: Web Search
+## Phase 54: Web Search
 
 **Purpose:** Implement web search capabilities.
 
@@ -1064,7 +1099,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 53: Research Mode
+## Phase 55: Research Mode
 
 **Purpose:** Implement deep research capabilities.
 
@@ -1081,7 +1116,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 54: Reasoning Features
+## Phase 56: Reasoning Features
 
 **Purpose:** Expose model reasoning capabilities.
 
@@ -1096,7 +1131,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 55: Custom Bots - Basic
+## Phase 57: Custom Bots - Basic
 
 **Purpose:** Allow creating custom AI assistants.
 
@@ -1115,7 +1150,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 56: Custom Bots - Advanced
+## Phase 58: Custom Bots - Advanced
 
 **Purpose:** Add knowledge and actions to bots.
 
@@ -1131,7 +1166,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 57: Integrations - MCP
+## Phase 59: Integrations - MCP
 
 **Purpose:** Implement Model Context Protocol support.
 
@@ -1149,7 +1184,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 58: Integrations - Webhooks
+## Phase 60: Integrations - Webhooks
 
 **Purpose:** Allow external integrations via webhooks.
 
@@ -1168,7 +1203,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 59: Quick Analytics
+## Phase 61: Quick Analytics
 
 **Purpose:** Implement in-chat analytics.
 
@@ -1184,7 +1219,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 60: Teams - Basic
+## Phase 62: Teams - Basic
 
 **Purpose:** Implement team functionality.
 
@@ -1201,7 +1236,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 61: Teams - Advanced
+## Phase 63: Teams - Advanced
 
 **Purpose:** Add enterprise team features.
 
@@ -1216,7 +1251,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 62: Privacy Features
+## Phase 64: Privacy Features
 
 **Purpose:** Implement privacy and compliance features.
 
@@ -1234,7 +1269,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 63: Marketing Site
+## Phase 65: Marketing Site
 
 **Purpose:** Create public marketing website.
 
@@ -1255,7 +1290,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 64: Mobile App
+## Phase 66: Mobile App
 
 **Purpose:** Create native mobile applications.
 
@@ -1281,7 +1316,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 65: CI/CD - Advanced Testing
+## Phase 67: CI/CD - Advanced Testing
 
 **Purpose:** Add comprehensive CI testing including real API tests.
 
@@ -1300,7 +1335,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 66: CI/CD - Deployment
+## Phase 68: CI/CD - Deployment
 
 **Purpose:** Implement continuous deployment.
 
@@ -1323,7 +1358,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 67: Storage Cleanup Job
+## Phase 69: Storage Cleanup Job
 
 **Purpose:** Implement scheduled maintenance tasks.
 
@@ -1336,7 +1371,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 68: Performance Optimization
+## Phase 70: Performance Optimization
 
 **Purpose:** Optimize application performance.
 
@@ -1348,7 +1383,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 69: Final Polish
+## Phase 71: Final Polish
 
 **Purpose:** Complete remaining features and refinements.
 
@@ -1365,7 +1400,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 70: Together AI Privacy Models
+## Phase 72: Together AI Privacy Models
 
 **Purpose:** Offer verifiable private AI option via Together AI with zero-retention.
 
@@ -1391,7 +1426,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 71: Self-Hosted Privacy LLM
+## Phase 73: Self-Hosted Privacy LLM
 
 **Purpose:** Maximum privacy option with infrastructure we fully control.
 
@@ -1415,49 +1450,55 @@ Phase 3: Testing Infrastructure (depends on 2)
     ↓
 Phase 4-6: Data layer (depends on 2-3)
     ↓
-Phase 7-9: Frontend core (depends on 4-6)
+Phase 7: Test Factories (depends on 5-6, enables TDD for all subsequent phases)
     ↓
-Phase 10: Backend core (depends on 4-6)
+Phase 8-10: Frontend core (depends on 4-7)
     ↓
-Phase 11-12: Early Deploy + CI (depends on 10)
+Phase 11: Backend core (depends on 4-7)
     ↓
-Phase 13-14: Dev Environment (depends on 10)
+Phase 12-13: Early Deploy + CI (depends on 11)
     ↓
-Phase 15: Auth (depends on 7-14)
+Phase 14-15: Dev Environment (depends on 11)
     ↓
-Phase 16-19: Basic chat (depends on 15)
+Phase 16: Auth (depends on 8-15)
     ↓
-Phase 20-28: Chat features (depends on 16-19)
+Phase 17: Developer Personas (depends on 16, enables fast E2E testing)
     ↓
-Phase 29: Testing additions (can parallel with 20+)
+Phase 18-21: Basic chat (depends on 16-17)
     ↓
-Phase 30: Redis (depends on 10-14)
+Phase 22-30: Chat features (depends on 18-21)
     ↓
-Phase 31-35: Storage (depends on 10-14, 30)
+Phase 31: Testing additions (can parallel with 22+)
     ↓
-Phase 36-39: Compute (depends on 31-35)
+Phase 32: Redis (depends on 11-15)
     ↓
-Phase 40: Publishing (depends on 31-35)
+Phase 33-37: Storage (depends on 11-15, 32)
     ↓
-Phase 41-42: Payments (depends on 15)
+Phase 38-41: Compute (depends on 33-37)
     ↓
-Phase 43: Backups (depends on 41-42)
+Phase 42: Publishing (depends on 33-37)
     ↓
-Phase 44-46: Observability (can start after 10)
+Phase 43-44: Payments (depends on 16)
     ↓
-Phase 47-51: Memory/Projects (depends on 15, 31-35)
+Phase 45: Backups (depends on 43-44)
     ↓
-Phase 52-54: Search/Research (depends on 17-18)
+Phase 46-48: Observability (can start after 11)
     ↓
-Phase 55-58: Bots/Integrations (depends on 47-51)
+Phase 49-53: Memory/Projects (depends on 16, 33-37)
     ↓
-Phase 59-62: Teams/Privacy (depends on 41-42)
+Phase 54-56: Search/Research/Reasoning (depends on 19-21)
     ↓
-Phase 63-64: Marketing/Mobile (depends on 7-9)
+Phase 57-60: Bots/Integrations (depends on 49-53)
     ↓
-Phase 65-67: DevOps (depends on all above)
+Phase 61: Quick Analytics (depends on 18-21)
     ↓
-Phase 68-69: Polish (depends on all above)
+Phase 62-64: Teams/Privacy (depends on 43-44)
     ↓
-Phase 70-71: Privacy LLM (depends on all above)
+Phase 65-66: Marketing/Mobile (depends on 8-10)
+    ↓
+Phase 67-69: DevOps (depends on all above)
+    ↓
+Phase 70-71: Polish (depends on all above)
+    ↓
+Phase 72-73: Privacy LLM (depends on all above)
 ```

@@ -177,6 +177,8 @@ Our security doesn't depend on hiding how things work. The source code is visibl
 | **pnpm** | Package manager. |
 | **Vitest** | Unit/integration testing. |
 | **Playwright** | E2E testing. Cross-browser,. |
+| **fishery** | Test factories with traits, sequences, and async DB creation. |
+| **@faker-js/faker** | Realistic fake data generation. |
 | **MinIO** | Local S3 mock. Emulates R2 for local development. |
 | **Payment Mocks** | Local mock for Helcim. No real API calls in local development. |
 | **Helcim Sandbox** | Helcim's test environment. Used in CI for real payment flow testing. |
