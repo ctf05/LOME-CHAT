@@ -204,27 +204,27 @@ Commit this file with progress updates to maintain state across sessions.
 
 **Tech Stack Addition:** shadcn/ui, Tailwind CSS
 
-- [ ] Create `packages/ui/` package
-- [ ] Install and configure Tailwind CSS
-- [ ] Initialize shadcn/ui with CLI
-- [ ] Add base components:
-  - [ ] Button
-  - [ ] Input
-  - [ ] Textarea
-  - [ ] Card
-  - [ ] Dialog
-  - [ ] Dropdown Menu
-  - [ ] Select
-  - [ ] Tabs
-  - [ ] Toast
-  - [ ] Tooltip
-  - [ ] Avatar
-  - [ ] Badge
-  - [ ] Separator
-  - [ ] Scroll Area
-  - [ ] Sheet (slide-over panel)
-- [ ] Create component exports from package
-- [ ] Import and use in `apps/web`
+- [x] Create `packages/ui/` package
+- [x] Install and configure Tailwind CSS
+- [x] Initialize shadcn/ui with CLI
+- [x] Add base components:
+  - [x] Button
+  - [x] Input
+  - [x] Textarea
+  - [x] Card
+  - [x] Dialog
+  - [x] Dropdown Menu
+  - [x] Select
+  - [x] Tabs
+  - [x] Toast (Sonner)
+  - [x] Tooltip
+  - [x] Avatar
+  - [x] Badge
+  - [x] Separator
+  - [x] Scroll Area
+  - [x] Sheet (slide-over panel)
+- [x] Create component exports from package
+- [x] Import and use in `apps/web`
 
 ---
 
