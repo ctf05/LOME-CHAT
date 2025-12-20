@@ -181,20 +181,20 @@ Commit this file with progress updates to maintain state across sessions.
 
 **Tech Stack Addition:** React, Vite, TanStack Router
 
-- [ ] Create `apps/web/` with Vite React template
-- [ ] Configure Vite for TypeScript strict mode
-- [ ] Install and configure TanStack Router
-- [ ] Create route structure:
-  - [ ] `routes/__root.tsx`
-  - [ ] `routes/index.tsx` (landing/redirect)
-  - [ ] `routes/_app.tsx` (authenticated layout)
-  - [ ] `routes/_app/chat.$conversationId.tsx`
-  - [ ] `routes/_app/projects.tsx`
-  - [ ] `routes/_app/settings.tsx`
-- [ ] Configure path aliases (`@/`)
-- [ ] Add route type generation script
-- [ ] Move all images in public/ to their final desination. Dont miss any. Delete public/ after
-- [ ] Record all the colors in colors.md in a real code file in their final destination. Dont miss any. Delete colors.md after
+- [x] Create `apps/web/` with Vite React template
+- [x] Configure Vite for TypeScript strict mode
+- [x] Install and configure TanStack Router
+- [x] Create route structure:
+  - [x] `routes/__root.tsx`
+  - [x] `routes/index.tsx` (landing/redirect)
+  - [x] `routes/_app.tsx` (authenticated layout)
+  - [x] `routes/_app/chat.$conversationId.tsx`
+  - [x] `routes/_app/projects.tsx`
+  - [x] `routes/_app/settings.tsx`
+- [x] Configure path aliases (`@/`)
+- [x] Add route type generation script
+- [x] Move all images in public/ to their final desination. Dont miss any. Delete public/ after
+- [x] Record all the colors in colors.md in a real code file in their final destination. Dont miss any. Delete colors.md after
 
 ---
 

@@ -26,6 +26,7 @@ yarn.lock
 *.d.ts
 *.min.js
 *.min.css
+**/routeTree.gen.ts
 
 # IDE
 .idea/
