@@ -258,28 +258,25 @@ Commit this file with progress updates to maintain state across sessions.
 
 **Tech Stack Addition:** Hono, Cloudflare Workers
 
-- [ ] Create `apps/api/` package
-- [ ] Install Hono
-- [ ] Install Wrangler (Cloudflare CLI)
-- [ ] Create `wrangler.toml` configuration
-- [ ] Create basic Hono app with health endpoint
-- [ ] Create middleware structure:
-  - [ ] `middleware/cors.ts`
-  - [ ] `middleware/error.ts`
-  - [ ] `middleware/validate.ts`
-- [ ] Create route structure:
-  - [ ] `routes/health.ts`
-  - [ ] `routes/auth.ts` (placeholder)
-  - [ ] `routes/conversations.ts` (placeholder)
-  - [ ] `routes/chat.ts` (placeholder)
-- [ ] Configure local development with Wrangler
-- [ ] Add OpenAPI generation from Zod schemas
+- [x] Create `apps/api/` package
+- [x] Install Hono
+- [x] Install Wrangler (Cloudflare CLI)
+- [x] Create `wrangler.toml` configuration
+- [x] Create basic Hono app with health endpoint
+- [x] Create middleware structure:
+  - [x] `middleware/cors.ts`
+  - [x] `middleware/error.ts`
+- [x] Create route structure:
+  - [x] `routes/health.ts`
+  - [x] `routes/auth.ts` (placeholder)
+  - [x] `routes/conversations.ts` (placeholder)
+  - [x] `routes/chat.ts` (placeholder)
+- [x] Configure local development with Wrangler
 
-**Human Setup Required:**
+**Implementation Notes:**
 
 1. Create Cloudflare account at https://cloudflare.com
 2. Install Wrangler CLI: `pnpm add -g wrangler`
-3. Run `wrangler login` to authenticate
 
 ---
 
@@ -416,6 +413,7 @@ Commit this file with progress updates to maintain state across sessions.
 - [ ] Implement message API:
   - [ ] `GET /conversations/:id/messages`
   - [ ] `POST /conversations/:id/messages`
+- [ ] Add OpenAPI generation from Zod schemas using @hono/zod-openapi
 - [ ] Wire up frontend to API
 - [ ] Test creating conversations and messages (stored in DB, no AI response)
 
