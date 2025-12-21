@@ -28,6 +28,12 @@ jobs:
           # Wait a bit more and verify connection
           sleep 5
           docker compose exec -T postgres pg_isready -U postgres
+          # Test connection from host
+          docker compose exec -T postgres psql -U postgres -d lome_chat -c "SELECT 1"
+          # Check what env vars will be used
+          ./scripts/with-env printenv | grep -E "(DATABASE_URL|MIGRATION_DATABASE_URL)"
+          # Check if port is reachable from host
+          timeout 5 bash -c 'echo > /dev/tcp/127.0.0.1/5432' && echo "Port 5432 is reachable" || echo "Port 5432 NOT reachable from host"
 
       - name: Run migrations
         run: pnpm db:migrate
