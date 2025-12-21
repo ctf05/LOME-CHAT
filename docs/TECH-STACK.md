@@ -171,17 +171,19 @@ Our security doesn't depend on hiding how things work. The source code is visibl
 
 ## Development
 
-| Technology          | Purpose                                                              |
-| ------------------- | -------------------------------------------------------------------- |
-| **Turborepo**       | Monorepo orchestration. Parallel builds, caching, task dependencies. |
-| **pnpm**            | Package manager.                                                     |
-| **Vitest**          | Unit/integration testing.                                            |
-| **Playwright**      | E2E testing. Cross-browser,.                                         |
-| **fishery**         | Test factories with traits, sequences, and async DB creation.        |
-| **@faker-js/faker** | Realistic fake data generation.                                      |
-| **MinIO**           | Local S3 mock. Emulates R2 for local development.                    |
-| **Payment Mocks**   | Local mock for Helcim. No real API calls in local development.       |
-| **Helcim Sandbox**  | Helcim's test environment. Used in CI for real payment flow testing. |
+| Technology          | Purpose                                                                             |
+| ------------------- | ----------------------------------------------------------------------------------- |
+| **Turborepo**       | Monorepo orchestration. Parallel builds, caching, task dependencies.                |
+| **pnpm**            | Package manager.                                                                    |
+| **Vitest**          | Unit/integration testing.                                                           |
+| **Playwright**      | E2E testing. Cross-browser,.                                                        |
+| **fishery**         | Test factories with traits, sequences, and async DB creation.                       |
+| **@faker-js/faker** | Realistic fake data generation.                                                     |
+| **MinIO**           | Local S3 mock. Emulates R2 for local development.                                   |
+| **Payment Mocks**   | Local mock for Helcim. No real API calls in local development.                      |
+| **Helcim Sandbox**  | Helcim's test environment. Used in CI for real payment flow testing.                |
+| **execa**           | Subprocess execution. Clean API for running shell commands from TypeScript scripts. |
+| **tsx**             | TypeScript execution. Runs TypeScript directly without compilation step.            |
 
 ---
 

@@ -101,28 +101,9 @@ See [docs/FEATURES.md](./docs/FEATURES.md) for the complete feature list and dev
 
 ## Contributing
 
-We welcome contributions from the community. To get started:
+See [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md) for development setup and contribution guidelines.
 
-1. **Read the documentation**
-   - [docs/TECH_STACK.md](./docs/TECH_STACK.md) — Complete technology decisions
-   - [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md) — Development setup and guidelines
-
-2. **Set up local development**
-
-   ```bash
-   git clone https://github.com/ctf05/LOME-CHAT.git
-   cd lome-chat
-   pnpm install
-   pnpm dev
-   ```
-
-3. **Pick something to work on**
-   - Browse open issues or start a discussion with your idea
-   - All contributions welcome—code, docs, bug reports, feedback
-
-4. **Submit a PR**
-   - All PRs require passing tests
-   - Real API integration tests run when a LOME team member comments "pr test"
+All contributors must agree to our [Contributor License Agreement](./CLA.md).
 
 ---
 
@@ -131,10 +112,6 @@ We welcome contributions from the community. To get started:
 This software is proprietary. The source code is visible for transparency, but usage rights require explicit permission from LOME-AI LLC. See [LICENSE](./LICENSE) for details.
 
 All code in this repository, including all contributions, is the sole property of **LOME-AI LLC**.
-
-### Contributor License Agreement
-
-Contributors agree to our [Contributor License Agreement](./CLA.md) before pull requests can be merged. This is standard practice for projects that need clear ownership of contributions. A GitHub bot will prompt you when you open your first PR.
 
 ---
 

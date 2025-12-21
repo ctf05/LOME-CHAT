@@ -320,20 +320,21 @@ Commit this file with progress updates to maintain state across sessions.
 
 **Purpose:** Create seamless local development experience.
 
-**Tech Stack Addition:** Docker (Postgres), Turborepo dev orchestration
+**Tech Stack Addition:** Docker (Postgres), Turborepo dev orchestration, execa, tsx
 
-- [ ] Create `docker-compose.yml` with:
-  - [ ] Postgres container (port 5432)
-- [ ] Create `scripts/dev.ts` startup script
-- [ ] Configure Turborepo `dev` task to start all services
-- [ ] Create seed script for test data
-- [ ] Update root package.json scripts:
-  - [ ] `pnpm dev` - start all services
-  - [ ] `pnpm db:migrate` - run migrations
-  - [ ] `pnpm db:seed` - seed database
-  - [ ] `pnpm db:studio` - open Drizzle Studio
-- [ ] Test full local stack startup
-- [ ] Document setup in `docs/CONTRIBUTING.md`
+- [x] Create `docker-compose.yml` with:
+  - [x] Postgres container (port 5432)
+  - [x] Neon proxy container (port 4444)
+- [x] Create `scripts/dev.ts` startup script
+- [x] Configure Turborepo `dev` task to start all services
+- [x] Create seed script for test data
+- [x] Update root package.json scripts:
+  - [x] `pnpm dev` - start all services
+  - [x] `pnpm db:migrate` - run migrations
+  - [x] `pnpm db:seed` - seed database
+  - [x] `pnpm db:studio` - open Drizzle Studio
+- [x] Test full local stack startup
+- [x] Document setup in `docs/CONTRIBUTING.md`
 
 ---
 
@@ -457,414 +458,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 21: OpenRouter Mocks
-
-**Purpose:** Create mock responses for local development.
-
-- [ ] Create `mocks/openrouter/` directory
-- [ ] Create fixture files for different response types:
-  - [ ] Simple text response
-  - [ ] Code response
-  - [ ] Long response
-  - [ ] Multi-turn conversation
-- [ ] Create mock server/handler for OpenRouter endpoints
-- [ ] Configure environment to use mocks in development
-- [ ] Ensure mocks return SSE stream format
-- [ ] Document how to add new fixtures
-
----
-
-## Phase 22: Model Switching
-
-**Purpose:** Allow changing models mid-conversation.
-
-**Features:** Model Switching
-
-- [ ] Add `model` field to messages table
-- [ ] Create model selector in chat header
-- [ ] Store selected model per conversation
-- [ ] Allow model override per message
-- [ ] Display model badge on each message
-- [ ] Handle model capability differences (context length, vision)
-- [ ] Block incompatible actions (e.g., image to non-vision model)
-
----
-
-## Phase 23: Local-Only Mode (PGlite)
-
-**Purpose:** Implement conversations that stay in browser only.
-
-**Features:** Local-Only Mode, Incognito Chat
-
-- [ ] Add `mode` field to conversations (cloud/local)
-- [ ] Initialize PGlite in browser
-- [ ] Run migrations on PGlite
-- [ ] Create mode selector when starting new conversation
-- [ ] Route database operations based on mode
-- [ ] Visual indicator for local-only conversations
-- [ ] Implement incognito mode (local + auto-delete on close)
-- [ ] Test data isolation between modes
-- [ ] Ensure local data survives page refresh
-
----
-
-## Phase 24: Conversation Management
-
-**Purpose:** Implement conversation organization features.
-
-**Features:** Chat History, Chat Search, Chat Naming, Chat Pinning, Chat Archive, Message Editing
-
-- [ ] Add `pinned`, `archived`, `title` fields to conversations
-- [ ] Implement pin/unpin functionality
-- [ ] Implement archive/unarchive functionality
-- [ ] Implement conversation rename
-- [ ] Implement full-text search on messages
-- [ ] Create search UI component
-- [ ] Implement message editing
-- [ ] Store edit history (original + edited)
-- [ ] Update UI to show edited indicator
-
----
-
-## Phase 25: Conversation Forking
-
-**Purpose:** Allow branching conversations from any point.
-
-**Features:** Conversation Forking
-
-- [ ] Design fork data model (parent reference, branch point)
-- [ ] Add `parent_id`, `forked_from_message_id` to conversations
-- [ ] Implement fork creation endpoint
-- [ ] Create fork button on messages
-- [ ] Create fork visualization (tree/branch UI)
-- [ ] Navigate between forks
-- [ ] Test forking with message history
-
----
-
-## Phase 26: Document Panel - Basic
-
-**Purpose:** Create the unified document panel structure.
-
-**Features:** Unified Panel, Split-Screen View
-
-- [ ] Create document panel component
-- [ ] Implement split-screen layout (resizable)
-- [ ] Create document state management
-- [ ] Create code editor component (CodeMirror or Monaco)
-- [ ] Create markdown editor component
-- [ ] Create panel toggle/minimize controls
-- [ ] Wire up AI responses to populate panel
-- [ ] Implement panel content types (code, markdown, html)
-
----
-
-## Phase 27: Document Panel - Live Preview
-
-**Purpose:** Add live rendering for HTML/React content.
-
-**Tech Stack Addition:** Sandpack
-
-**Features:** Live Preview, React Rendering, HTML/CSS Preview
-
-- [ ] Install Sandpack
-- [ ] Create preview pane component
-- [ ] Implement HTML preview mode
-- [ ] Implement React/JSX preview mode
-- [ ] Implement CSS styling in preview
-- [ ] Handle preview errors gracefully
-- [ ] Add preview refresh control
-- [ ] Support light/dark theme in preview
-
----
-
-## Phase 28: Document Panel - Versions
-
-**Purpose:** Implement document versioning and history.
-
-**Features:** Version History, Diff View, User Editing, Inline Editing
-
-- [ ] Create document versions table
-- [ ] Save version on each AI edit
-- [ ] Save version on each user edit
-- [ ] Create version history sidebar
-- [ ] Implement version restore
-- [ ] Implement diff view between versions
-- [ ] Implement inline editing (edit selection only)
-- [ ] Track edit source (user vs AI)
-
----
-
-## Phase 29: Context Management
-
-**Purpose:** Implement context awareness features.
-
-**Features:** Context Compacting, Auto Model Selection
-
-- [ ] Calculate and display context usage
-- [ ] Create context usage indicator component
-- [ ] Implement context compacting prompt
-- [ ] Allow manual trigger of compacting
-- [ ] Implement auto model selection based on task
-- [ ] Create model recommendation logic
-- [ ] Display model recommendation UI
-
----
-
-## Phase 30: Response Features
-
-**Purpose:** Implement response manipulation features.
-
-**Features:** Response Regeneration, Multi-Model Conversations
-
-- [ ] Add regenerate button to messages
-- [ ] Implement regenerate endpoint
-- [ ] Store regeneration history
-- [ ] Allow model selection for regeneration
-- [ ] Implement multi-model response (ask same question to multiple models)
-- [ ] Create comparison view for multi-model responses
-
----
-
-## Phase 31: Testing Additions
-
-**Purpose:** Add comprehensive test coverage for all implemented features.
-
-- [ ] Add unit tests for:
-  - [ ] Zod schemas
-  - [ ] Database queries
-  - [ ] Utility functions
-  - [ ] React hooks
-- [ ] Create E2E tests for:
-  - [ ] Authentication flow
-  - [ ] Create conversation
-  - [ ] Send message (mocked AI)
-  - [ ] Model switching
-- [ ] Verify coverage remains at 95%
-
----
-
-## Phase 32: Redis & Rate Limiting
-
-**Purpose:** Add caching and rate limiting infrastructure.
-
-**Tech Stack Addition:** Upstash Redis
-
-**Features:** Rate Limiting
-
-- [ ] Create Upstash account and database
-- [ ] Install `@upstash/redis` and `@upstash/ratelimit`
-- [ ] Create rate limit middleware
-- [ ] Implement rate limits:
-  - [ ] Chat messages: 60/minute
-  - [ ] API general: 1000/minute
-  - [ ] Account creation: 3/day per IP
-- [ ] Add rate limit headers to responses
-- [ ] Create rate limit error handling UI
-- [ ] Cache OpenRouter model metadata in Redis
-- [ ] Cache user session data in Redis
-
-**Human Setup Required:**
-
-1. Create Upstash account at https://upstash.com
-2. Create Redis database
-3. Copy `UPSTASH_REDIS_URL` and `UPSTASH_REDIS_TOKEN` to `.env.local`
-
----
-
-## Phase 33: Storage Setup
-
-**Purpose:** Add object storage for files.
-
-**Tech Stack Addition:** Cloudflare R2, MinIO
-
-- [ ] Create R2 bucket in Cloudflare dashboard
-- [ ] Configure R2 binding in `wrangler.toml`
-- [ ] Create storage client wrapper
-- [ ] Add MinIO to `docker-compose.yml`
-- [ ] Create MinIO initialization script
-- [ ] Configure environment to switch R2/MinIO based on env
-- [ ] Create storage utility functions:
-  - [ ] `uploadFile()`
-  - [ ] `getFileUrl()`
-  - [ ] `deleteFile()`
-- [ ] Test upload/download locally with MinIO
-- [ ] Add `files` table to database schema
-
-**Human Setup Required:**
-
-1. Go to Cloudflare Dashboard → R2
-2. Create a new bucket named `lome-chat-files`
-3. Generate R2 API tokens
-4. Add `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY` to `.env.local`
-
----
-
-## Phase 34: File Upload - Basic
-
-**Purpose:** Implement basic file upload functionality.
-
-**Features:** File Upload, Multi-File Upload
-
-- [ ] Create file upload endpoint
-- [ ] Create file upload UI component
-- [ ] Implement drag-and-drop upload
-- [ ] Implement multi-file selection
-- [ ] Show upload progress
-- [ ] Store file metadata in database
-- [ ] Link files to conversations
-- [ ] Display uploaded files in chat
-- [ ] Implement file deletion
-- [ ] Add file size limits
-
----
-
-## Phase 35: File Analysis - Documents
-
-**Purpose:** Analyze uploaded document files.
-
-**Features:** PDF Analysis, Spreadsheet Analysis, Word Document Processing, PowerPoint Analysis, Code File Analysis
-
-- [ ] Install document parsing libraries (pdf-parse, xlsx, mammoth)
-- [ ] Create document processing service
-- [ ] Implement PDF text extraction
-- [ ] Implement Excel/CSV parsing
-- [ ] Implement Word document parsing
-- [ ] Implement PowerPoint parsing
-- [ ] Implement code file syntax detection
-- [ ] Send extracted content to AI with context
-- [ ] Display document preview in UI
-
----
-
-## Phase 36: File Analysis - Images
-
-**Purpose:** Analyze uploaded images with vision models.
-
-**Features:** Image Analysis, Visual PDF Processing
-
-- [ ] Detect vision-capable models from OpenRouter
-- [ ] Implement image upload to vision models
-- [ ] Convert images to base64 for API
-- [ ] Implement PDF-as-image processing
-- [ ] Display image previews in chat
-- [ ] Handle large images (resize/compress)
-- [ ] Fall back gracefully for non-vision models
-
----
-
-## Phase 37: Storage Quota
-
-**Purpose:** Implement dynamic storage limits.
-
-**Features:** Dynamic Storage Quota
-
-- [ ] Calculate user storage usage
-- [ ] Implement quota formula: 1GB base + 1GB per $1 fees
-- [ ] Add storage tracking to file uploads
-- [ ] Create storage usage display
-- [ ] Block uploads when quota exceeded
-- [ ] Create monthly cleanup job logic (scheduled later)
-
----
-
-## Phase 38: Compute Setup
-
-**Purpose:** Set up server-side code execution.
-
-**Tech Stack Addition:** Fly.io Machines
-
-- [ ] Create Fly.io account
-- [ ] Create `services/sandbox/` directory
-- [ ] Create Dockerfile for sandbox environment:
-  - [ ] Python 3.11 with NumPy, Pandas, Matplotlib
-  - [ ] Node.js 20
-  - [ ] Security restrictions (non-root, resource limits)
-- [ ] Create execution harness script
-- [ ] Deploy sandbox to Fly.io
-- [ ] Create sandbox API client
-- [ ] Create mock sandbox for local development
-- [ ] Test Python execution
-- [ ] Test JavaScript execution
-
-**Human Setup Required:**
-
-1. Create Fly.io account at https://fly.io
-2. Install flyctl: `curl -L https://fly.io/install.sh | sh`
-3. Run `flyctl auth login`
-4. Run `flyctl launch` in `services/sandbox/`
-
----
-
-## Phase 39: Code Execution - Backend
-
-**Purpose:** Implement Python and JavaScript execution.
-
-**Features:** Python Execution, JavaScript Execution
-
-- [ ] Create code execution endpoint
-- [ ] Detect language from code or explicit parameter
-- [ ] Send code to Fly.io sandbox
-- [ ] Stream execution output back to client
-- [ ] Handle execution timeouts (30s default)
-- [ ] Handle execution errors
-- [ ] Return stdout, stderr, and generated files
-- [ ] Display execution results in document panel
-- [ ] Implement execution history per conversation
-
----
-
-## Phase 40: Document Creation
-
-**Purpose:** Generate downloadable document files.
-
-**Features:** Word Documents, PDF Documents, Spreadsheets, Presentations
-
-- [ ] Add document generation libraries to sandbox (python-docx, reportlab, openpyxl, python-pptx)
-- [ ] Create document generation prompts/templates
-- [ ] Implement Word document generation
-- [ ] Implement PDF generation
-- [ ] Implement Excel generation
-- [ ] Implement PowerPoint generation
-- [ ] Upload generated files to R2
-- [ ] Create download links
-- [ ] Display download button in chat
-
----
-
-## Phase 41: File Handling - Advanced
-
-**Purpose:** Implement remaining file handling features.
-
-**Features:** ZIP Archive Handling, GitHub Repository Import, OCR, Audio Transcription, Video Analysis
-
-- [ ] Implement ZIP extraction and processing
-- [ ] Implement GitHub repo clone and analysis
-- [ ] Implement OCR using Tesseract in sandbox
-- [ ] Implement audio transcription (Whisper or similar)
-- [ ] Implement video frame extraction for analysis
-- [ ] Add appropriate file type icons
-
----
-
-## Phase 42: Content Publishing
-
-**Purpose:** Allow publishing documents to public URLs.
-
-**Features:** Content Publishing, Chat Sharing
-
-- [ ] Create `published_documents` table
-- [ ] Create `shared_conversations` table
-- [ ] Generate unique public URLs
-- [ ] Create public document viewer page
-- [ ] Create public conversation viewer page
-- [ ] Implement publish/unpublish toggle
-- [ ] Add Open Graph meta tags for previews
-- [ ] Handle access permissions
-
----
-
-## Phase 43: Payments Setup
+## Phase 21: Payments Setup
 
 **Purpose:** Implement payment processing.
 
@@ -893,7 +487,7 @@ Commit this file with progress updates to maintain state across sessions.
 
 ---
 
-## Phase 44: Credit System
+## Phase 22: Credit System
 
 **Purpose:** Implement usage tracking and billing.
 
@@ -907,6 +501,425 @@ Commit this file with progress updates to maintain state across sessions.
 - [ ] Create low balance warning
 - [ ] Create usage breakdown view
 - [ ] Implement daily spending limits
+
+---
+
+## 🚀 MVP LAUNCH POINT
+
+After Phase 22, the product has all MVP features:
+
+- User authentication
+- Chat with LLM (streaming)
+- Saved conversations
+- Payment processing
+- Credit-based billing
+
+---
+
+## Phase 23: OpenRouter Mocks
+
+**Purpose:** Create mock responses for local development.
+
+- [ ] Create `mocks/openrouter/` directory
+- [ ] Create fixture files for different response types:
+  - [ ] Simple text response
+  - [ ] Code response
+  - [ ] Long response
+  - [ ] Multi-turn conversation
+- [ ] Create mock server/handler for OpenRouter endpoints
+- [ ] Configure environment to use mocks in development
+- [ ] Ensure mocks return SSE stream format
+- [ ] Document how to add new fixtures
+
+---
+
+## Phase 24: Model Switching
+
+**Purpose:** Allow changing models mid-conversation.
+
+**Features:** Model Switching
+
+- [ ] Add `model` field to messages table
+- [ ] Create model selector in chat header
+- [ ] Store selected model per conversation
+- [ ] Allow model override per message
+- [ ] Display model badge on each message
+- [ ] Handle model capability differences (context length, vision)
+- [ ] Block incompatible actions (e.g., image to non-vision model)
+
+---
+
+## Phase 25: Local-Only Mode (PGlite)
+
+**Purpose:** Implement conversations that stay in browser only.
+
+**Features:** Local-Only Mode, Incognito Chat
+
+- [ ] Add `mode` field to conversations (cloud/local)
+- [ ] Initialize PGlite in browser
+- [ ] Run migrations on PGlite
+- [ ] Create mode selector when starting new conversation
+- [ ] Route database operations based on mode
+- [ ] Visual indicator for local-only conversations
+- [ ] Implement incognito mode (local + auto-delete on close)
+- [ ] Test data isolation between modes
+- [ ] Ensure local data survives page refresh
+
+---
+
+## Phase 26: Conversation Management
+
+**Purpose:** Implement conversation organization features.
+
+**Features:** Chat History, Chat Search, Chat Naming, Chat Pinning, Chat Archive, Message Editing
+
+- [ ] Add `pinned`, `archived`, `title` fields to conversations
+- [ ] Implement pin/unpin functionality
+- [ ] Implement archive/unarchive functionality
+- [ ] Implement conversation rename
+- [ ] Implement full-text search on messages
+- [ ] Create search UI component
+- [ ] Implement message editing
+- [ ] Store edit history (original + edited)
+- [ ] Update UI to show edited indicator
+
+---
+
+## Phase 27: Conversation Forking
+
+**Purpose:** Allow branching conversations from any point.
+
+**Features:** Conversation Forking
+
+- [ ] Design fork data model (parent reference, branch point)
+- [ ] Add `parent_id`, `forked_from_message_id` to conversations
+- [ ] Implement fork creation endpoint
+- [ ] Create fork button on messages
+- [ ] Create fork visualization (tree/branch UI)
+- [ ] Navigate between forks
+- [ ] Test forking with message history
+
+---
+
+## Phase 28: Document Panel - Basic
+
+**Purpose:** Create the unified document panel structure.
+
+**Features:** Unified Panel, Split-Screen View
+
+- [ ] Create document panel component
+- [ ] Implement split-screen layout (resizable)
+- [ ] Create document state management
+- [ ] Create code editor component (CodeMirror or Monaco)
+- [ ] Create markdown editor component
+- [ ] Create panel toggle/minimize controls
+- [ ] Wire up AI responses to populate panel
+- [ ] Implement panel content types (code, markdown, html)
+
+---
+
+## Phase 29: Document Panel - Live Preview
+
+**Purpose:** Add live rendering for HTML/React content.
+
+**Tech Stack Addition:** Sandpack
+
+**Features:** Live Preview, React Rendering, HTML/CSS Preview
+
+- [ ] Install Sandpack
+- [ ] Create preview pane component
+- [ ] Implement HTML preview mode
+- [ ] Implement React/JSX preview mode
+- [ ] Implement CSS styling in preview
+- [ ] Handle preview errors gracefully
+- [ ] Add preview refresh control
+- [ ] Support light/dark theme in preview
+
+---
+
+## Phase 30: Document Panel - Versions
+
+**Purpose:** Implement document versioning and history.
+
+**Features:** Version History, Diff View, User Editing, Inline Editing
+
+- [ ] Create document versions table
+- [ ] Save version on each AI edit
+- [ ] Save version on each user edit
+- [ ] Create version history sidebar
+- [ ] Implement version restore
+- [ ] Implement diff view between versions
+- [ ] Implement inline editing (edit selection only)
+- [ ] Track edit source (user vs AI)
+
+---
+
+## Phase 31: Context Management
+
+**Purpose:** Implement context awareness features.
+
+**Features:** Context Compacting, Auto Model Selection
+
+- [ ] Calculate and display context usage
+- [ ] Create context usage indicator component
+- [ ] Implement context compacting prompt
+- [ ] Allow manual trigger of compacting
+- [ ] Implement auto model selection based on task
+- [ ] Create model recommendation logic
+- [ ] Display model recommendation UI
+
+---
+
+## Phase 32: Response Features
+
+**Purpose:** Implement response manipulation features.
+
+**Features:** Response Regeneration, Multi-Model Conversations
+
+- [ ] Add regenerate button to messages
+- [ ] Implement regenerate endpoint
+- [ ] Store regeneration history
+- [ ] Allow model selection for regeneration
+- [ ] Implement multi-model response (ask same question to multiple models)
+- [ ] Create comparison view for multi-model responses
+
+---
+
+## Phase 33: Testing Additions
+
+**Purpose:** Add comprehensive test coverage for all implemented features.
+
+- [ ] Add unit tests for:
+  - [ ] Zod schemas
+  - [ ] Database queries
+  - [ ] Utility functions
+  - [ ] React hooks
+- [ ] Create E2E tests for:
+  - [ ] Authentication flow
+  - [ ] Create conversation
+  - [ ] Send message (mocked AI)
+  - [ ] Model switching
+- [ ] Verify coverage remains at 95%
+
+---
+
+## Phase 34: Redis & Rate Limiting
+
+**Purpose:** Add caching and rate limiting infrastructure.
+
+**Tech Stack Addition:** Upstash Redis
+
+**Features:** Rate Limiting
+
+- [ ] Create Upstash account and database
+- [ ] Install `@upstash/redis` and `@upstash/ratelimit`
+- [ ] Create rate limit middleware
+- [ ] Implement rate limits:
+  - [ ] Chat messages: 60/minute
+  - [ ] API general: 1000/minute
+  - [ ] Account creation: 3/day per IP
+- [ ] Add rate limit headers to responses
+- [ ] Create rate limit error handling UI
+- [ ] Cache OpenRouter model metadata in Redis
+- [ ] Cache user session data in Redis
+
+**Human Setup Required:**
+
+1. Create Upstash account at https://upstash.com
+2. Create Redis database
+3. Copy `UPSTASH_REDIS_URL` and `UPSTASH_REDIS_TOKEN` to `.env.local`
+
+---
+
+## Phase 35: Storage Setup
+
+**Purpose:** Add object storage for files.
+
+**Tech Stack Addition:** Cloudflare R2, MinIO
+
+- [ ] Create R2 bucket in Cloudflare dashboard
+- [ ] Configure R2 binding in `wrangler.toml`
+- [ ] Create storage client wrapper
+- [ ] Add MinIO to `docker-compose.yml`
+- [ ] Create MinIO initialization script
+- [ ] Configure environment to switch R2/MinIO based on env
+- [ ] Create storage utility functions:
+  - [ ] `uploadFile()`
+  - [ ] `getFileUrl()`
+  - [ ] `deleteFile()`
+- [ ] Test upload/download locally with MinIO
+- [ ] Add `files` table to database schema
+
+**Human Setup Required:**
+
+1. Go to Cloudflare Dashboard → R2
+2. Create a new bucket named `lome-chat-files`
+3. Generate R2 API tokens
+4. Add `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY` to `.env.local`
+
+---
+
+## Phase 36: File Upload - Basic
+
+**Purpose:** Implement basic file upload functionality.
+
+**Features:** File Upload, Multi-File Upload
+
+- [ ] Create file upload endpoint
+- [ ] Create file upload UI component
+- [ ] Implement drag-and-drop upload
+- [ ] Implement multi-file selection
+- [ ] Show upload progress
+- [ ] Store file metadata in database
+- [ ] Link files to conversations
+- [ ] Display uploaded files in chat
+- [ ] Implement file deletion
+- [ ] Add file size limits
+
+---
+
+## Phase 37: File Analysis - Documents
+
+**Purpose:** Analyze uploaded document files.
+
+**Features:** PDF Analysis, Spreadsheet Analysis, Word Document Processing, PowerPoint Analysis, Code File Analysis
+
+- [ ] Install document parsing libraries (pdf-parse, xlsx, mammoth)
+- [ ] Create document processing service
+- [ ] Implement PDF text extraction
+- [ ] Implement Excel/CSV parsing
+- [ ] Implement Word document parsing
+- [ ] Implement PowerPoint parsing
+- [ ] Implement code file syntax detection
+- [ ] Send extracted content to AI with context
+- [ ] Display document preview in UI
+
+---
+
+## Phase 38: File Analysis - Images
+
+**Purpose:** Analyze uploaded images with vision models.
+
+**Features:** Image Analysis, Visual PDF Processing
+
+- [ ] Detect vision-capable models from OpenRouter
+- [ ] Implement image upload to vision models
+- [ ] Convert images to base64 for API
+- [ ] Implement PDF-as-image processing
+- [ ] Display image previews in chat
+- [ ] Handle large images (resize/compress)
+- [ ] Fall back gracefully for non-vision models
+
+---
+
+## Phase 39: Storage Quota
+
+**Purpose:** Implement dynamic storage limits.
+
+**Features:** Dynamic Storage Quota
+
+- [ ] Calculate user storage usage
+- [ ] Implement quota formula: 1GB base + 1GB per $1 fees
+- [ ] Add storage tracking to file uploads
+- [ ] Create storage usage display
+- [ ] Block uploads when quota exceeded
+- [ ] Create monthly cleanup job logic (scheduled later)
+
+---
+
+## Phase 40: Compute Setup
+
+**Purpose:** Set up server-side code execution.
+
+**Tech Stack Addition:** Fly.io Machines
+
+- [ ] Create Fly.io account
+- [ ] Create `services/sandbox/` directory
+- [ ] Create Dockerfile for sandbox environment:
+  - [ ] Python 3.11 with NumPy, Pandas, Matplotlib
+  - [ ] Node.js 20
+  - [ ] Security restrictions (non-root, resource limits)
+- [ ] Create execution harness script
+- [ ] Deploy sandbox to Fly.io
+- [ ] Create sandbox API client
+- [ ] Create mock sandbox for local development
+- [ ] Test Python execution
+- [ ] Test JavaScript execution
+
+**Human Setup Required:**
+
+1. Create Fly.io account at https://fly.io
+2. Install flyctl: `curl -L https://fly.io/install.sh | sh`
+3. Run `flyctl auth login`
+4. Run `flyctl launch` in `services/sandbox/`
+
+---
+
+## Phase 41: Code Execution - Backend
+
+**Purpose:** Implement Python and JavaScript execution.
+
+**Features:** Python Execution, JavaScript Execution
+
+- [ ] Create code execution endpoint
+- [ ] Detect language from code or explicit parameter
+- [ ] Send code to Fly.io sandbox
+- [ ] Stream execution output back to client
+- [ ] Handle execution timeouts (30s default)
+- [ ] Handle execution errors
+- [ ] Return stdout, stderr, and generated files
+- [ ] Display execution results in document panel
+- [ ] Implement execution history per conversation
+
+---
+
+## Phase 42: Document Creation
+
+**Purpose:** Generate downloadable document files.
+
+**Features:** Word Documents, PDF Documents, Spreadsheets, Presentations
+
+- [ ] Add document generation libraries to sandbox (python-docx, reportlab, openpyxl, python-pptx)
+- [ ] Create document generation prompts/templates
+- [ ] Implement Word document generation
+- [ ] Implement PDF generation
+- [ ] Implement Excel generation
+- [ ] Implement PowerPoint generation
+- [ ] Upload generated files to R2
+- [ ] Create download links
+- [ ] Display download button in chat
+
+---
+
+## Phase 43: File Handling - Advanced
+
+**Purpose:** Implement remaining file handling features.
+
+**Features:** ZIP Archive Handling, GitHub Repository Import, OCR, Audio Transcription, Video Analysis
+
+- [ ] Implement ZIP extraction and processing
+- [ ] Implement GitHub repo clone and analysis
+- [ ] Implement OCR using Tesseract in sandbox
+- [ ] Implement audio transcription (Whisper or similar)
+- [ ] Implement video frame extraction for analysis
+- [ ] Add appropriate file type icons
+
+---
+
+## Phase 44: Content Publishing
+
+**Purpose:** Allow publishing documents to public URLs.
+
+**Features:** Content Publishing, Chat Sharing
+
+- [ ] Create `published_documents` table
+- [ ] Create `shared_conversations` table
+- [ ] Generate unique public URLs
+- [ ] Create public document viewer page
+- [ ] Create public conversation viewer page
+- [ ] Implement publish/unpublish toggle
+- [ ] Add Open Graph meta tags for previews
+- [ ] Handle access permissions
 
 ---
 
@@ -1489,35 +1502,39 @@ Phase 16: Auth (depends on 8-15)
     ↓
 Phase 17: Developer Personas (depends on 16, enables fast E2E testing)
     ↓
-Phase 18-21: Basic chat (depends on 16-17)
+Phase 18-20: Basic chat + LLM (depends on 16-17)
     ↓
-Phase 22-30: Chat features (depends on 18-21)
+Phase 21-22: Payments + Credits (depends on 16)
     ↓
-Phase 31: Testing additions (can parallel with 22+)
+🚀 MVP LAUNCH POINT
     ↓
-Phase 32: Redis (depends on 11-15)
+Phase 23: OpenRouter Mocks (optional, for local dev)
     ↓
-Phase 33-37: Storage (depends on 11-15, 32)
+Phase 24-32: Chat features (depends on 18-20)
     ↓
-Phase 38-41: Compute (depends on 33-37)
+Phase 33: Testing additions (can parallel with 24+)
     ↓
-Phase 42: Publishing (depends on 33-37)
+Phase 34: Redis (depends on 11-15)
     ↓
-Phase 43-44: Payments (depends on 16)
+Phase 35-39: Storage (depends on 11-15, 34)
     ↓
-Phase 45: Backups (depends on 43-44)
+Phase 40-43: Compute (depends on 35-39)
+    ↓
+Phase 44: Publishing (depends on 35-39)
+    ↓
+Phase 45: Backups (depends on 21-22)
     ↓
 Phase 46-48: Observability (can start after 11)
     ↓
-Phase 49-53: Memory/Projects (depends on 16, 33-37)
+Phase 49-53: Memory/Projects (depends on 16, 35-39)
     ↓
-Phase 54-56: Search/Research/Reasoning (depends on 19-21)
+Phase 54-56: Search/Research/Reasoning (depends on 18-20)
     ↓
 Phase 57-60: Bots/Integrations (depends on 49-53)
     ↓
-Phase 61: Quick Analytics (depends on 18-21)
+Phase 61: Quick Analytics (depends on 18-20)
     ↓
-Phase 62-64: Teams/Privacy (depends on 43-44)
+Phase 62-64: Teams/Privacy (depends on 21-22)
     ↓
 Phase 65-66: Marketing/Mobile (depends on 8-10)
     ↓
