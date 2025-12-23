@@ -14,6 +14,9 @@ importers:
       '@lome-chat/db':
         specifier: workspace:*
         version: link:packages/db
+      '@lome-chat/shared':
+        specifier: workspace:*
+        version: link:packages/shared
       '@playwright/test':
         specifier: ^1.57.0
         version: 1.57.0
@@ -202,6 +205,9 @@ importers:
       '@neondatabase/serverless':
         specifier: ^1.0.2
         version: 1.0.2
+      '@noble/hashes':
+        specifier: ^2.0.1
+        version: 2.0.1
       drizzle-orm:
         specifier: ^0.45.0
         version: 0.45.1(@cloudflare/workers-types@4.20251221.0)(@neondatabase/serverless@1.0.2)(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.16.3)
@@ -224,6 +230,9 @@ importers:
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1
+      better-auth:
+        specifier: ^1.4.7
+        version: 1.4.7(drizzle-kit@0.31.8)(drizzle-orm@0.45.1(@cloudflare/workers-types@4.20251221.0)(@neondatabase/serverless@1.0.2)(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.16.3))(pg@8.16.3)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10)(vitest@4.0.16)
       drizzle-kit:
         specifier: ^0.31.0
         version: 0.31.8

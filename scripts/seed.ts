@@ -9,6 +9,8 @@ import {
   conversations,
   messages,
   projects,
+  accounts,
+  hashPassword,
 } from '@lome-chat/db';
 import {
   userFactory,
@@ -16,6 +18,7 @@ import {
   messageFactory,
   projectFactory,
 } from '@lome-chat/db/factories';
+import { personas, DEV_PASSWORD } from '@lome-chat/shared';
 
 export const SEED_CONFIG = {
   USER_COUNT: 5,
@@ -42,9 +45,18 @@ type User = typeof users.$inferInsert;
 type Conversation = typeof conversations.$inferInsert;
 type Message = typeof messages.$inferInsert;
 type Project = typeof projects.$inferInsert;
+type Account = typeof accounts.$inferInsert;
 
 interface SeedData {
   users: User[];
+  projects: Project[];
+  conversations: Conversation[];
+  messages: Message[];
+}
+
+interface PersonaData {
+  users: User[];
+  accounts: Account[];
   projects: Project[];
   conversations: Conversation[];
   messages: Message[];
@@ -108,8 +120,104 @@ export function generateSeedData(): SeedData {
   };
 }
 
+/**
+ * Generates persona data for development users (alice, bob, charlie).
+ * These users have fixed UUIDs and known passwords for easy login during development.
+ */
+export async function generatePersonaData(): Promise<PersonaData> {
+  const personaUsers: User[] = [];
+  const personaAccounts: Account[] = [];
+  const personaProjects: Project[] = [];
+  const personaConversations: Conversation[] = [];
+  const personaMessages: Message[] = [];
+
+  // Hash the dev password once (same for all personas)
+  const hashedPassword = await hashPassword(DEV_PASSWORD);
+  const now = new Date();
+
+  // Create users and accounts for each persona
+  for (const [name, persona] of Object.entries(personas)) {
+    personaUsers.push({
+      id: persona.id,
+      email: persona.email,
+      name: persona.name,
+      emailVerified: persona.emailVerified,
+      image: null,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    personaAccounts.push({
+      id: seedUUID(`account-${name}`),
+      userId: persona.id,
+      accountId: persona.email,
+      providerId: 'credential',
+      password: hashedPassword,
+      accessToken: null,
+      refreshToken: null,
+      accessTokenExpiresAt: null,
+      refreshTokenExpiresAt: null,
+      scope: null,
+      idToken: null,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
+  // Generate sample data only for Alice
+  const aliceId = personas.alice.id;
+
+  // 2 projects for Alice
+  for (let i = 0; i < 2; i++) {
+    personaProjects.push(
+      projectFactory.build({
+        id: seedUUID(`alice-project-${String(i + 1)}`),
+        userId: aliceId,
+      })
+    );
+  }
+
+  // 3 conversations for Alice (2 in first project, 1 without project)
+  for (let i = 0; i < 3; i++) {
+    const convId = seedUUID(`alice-conv-${String(i + 1)}`);
+    personaConversations.push(
+      conversationFactory.build({
+        id: convId,
+        userId: aliceId,
+      })
+    );
+
+    // 3-5 messages per conversation
+    const messageCount = 3 + (i % 3); // 3, 4, 5 messages
+    for (let j = 0; j < messageCount; j++) {
+      const role = j % 2 === 0 ? 'user' : 'assistant';
+      personaMessages.push(
+        messageFactory.build({
+          id: seedUUID(`alice-msg-${String(i + 1)}-${String(j + 1)}`),
+          conversationId: convId,
+          role,
+          model: role === 'assistant' ? 'gpt-4' : null,
+        })
+      );
+    }
+  }
+
+  return {
+    users: personaUsers,
+    accounts: personaAccounts,
+    projects: personaProjects,
+    conversations: personaConversations,
+    messages: personaMessages,
+  };
+}
+
 type DbClient = ReturnType<typeof createDb>;
-type Table = typeof users | typeof conversations | typeof messages | typeof projects;
+type Table =
+  | typeof users
+  | typeof conversations
+  | typeof messages
+  | typeof projects
+  | typeof accounts;
 
 export async function upsertEntity(
   db: DbClient,
@@ -142,49 +250,81 @@ export async function seed(): Promise<void> {
     connectionString: databaseUrl,
     neonDev: LOCAL_NEON_DEV_CONFIG,
   });
+
+  // Generate both regular seed data and persona data
   const data = generateSeedData();
+  const personaData = await generatePersonaData();
 
   console.log('Seeding database...');
+  console.log('');
+  console.log('Dev Personas:');
+  console.log(`  Users: ${String(personaData.users.length)}`);
+  console.log(`  Accounts: ${String(personaData.accounts.length)}`);
+  console.log(`  Projects: ${String(personaData.projects.length)}`);
+  console.log(`  Conversations: ${String(personaData.conversations.length)}`);
+  console.log(`  Messages: ${String(personaData.messages.length)}`);
+  console.log('');
+  console.log('Random Seed Data:');
   console.log(`  Users: ${String(data.users.length)}`);
   console.log(`  Projects: ${String(data.projects.length)}`);
   console.log(`  Conversations: ${String(data.conversations.length)}`);
   console.log(`  Messages: ${String(data.messages.length)}`);
   console.log('');
 
-  // Seed users
+  // Seed persona users first (they have accounts)
   let created = 0;
   let exists = 0;
+  for (const user of personaData.users) {
+    const result = await upsertEntity(db, users, user);
+    if (result === 'created') created++;
+    else exists++;
+  }
+  console.log(`Persona Users: ${String(created)} created, ${String(exists)} already existed`);
+
+  // Seed persona accounts
+  created = 0;
+  exists = 0;
+  for (const account of personaData.accounts) {
+    const result = await upsertEntity(db, accounts, account);
+    if (result === 'created') created++;
+    else exists++;
+  }
+  console.log(`Persona Accounts: ${String(created)} created, ${String(exists)} already existed`);
+
+  // Seed regular users
+  created = 0;
+  exists = 0;
   for (const user of data.users) {
     const result = await upsertEntity(db, users, user);
     if (result === 'created') created++;
     else exists++;
   }
-  console.log(`Users: ${String(created)} created, ${String(exists)} already existed`);
+  console.log(`Random Users: ${String(created)} created, ${String(exists)} already existed`);
 
-  // Seed projects
+  // Seed all projects (persona + random)
   created = 0;
   exists = 0;
-  for (const project of data.projects) {
+  for (const project of [...personaData.projects, ...data.projects]) {
     const result = await upsertEntity(db, projects, project);
     if (result === 'created') created++;
     else exists++;
   }
   console.log(`Projects: ${String(created)} created, ${String(exists)} already existed`);
 
-  // Seed conversations
+  // Seed all conversations (persona + random)
   created = 0;
   exists = 0;
-  for (const conv of data.conversations) {
+  for (const conv of [...personaData.conversations, ...data.conversations]) {
     const result = await upsertEntity(db, conversations, conv);
     if (result === 'created') created++;
     else exists++;
   }
   console.log(`Conversations: ${String(created)} created, ${String(exists)} already existed`);
 
-  // Seed messages
+  // Seed all messages (persona + random)
   created = 0;
   exists = 0;
-  for (const msg of data.messages) {
+  for (const msg of [...personaData.messages, ...data.messages]) {
     const result = await upsertEntity(db, messages, msg);
     if (result === 'created') created++;
     else exists++;

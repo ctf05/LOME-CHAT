@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
+    "@noble/hashes": "^2.0.1",
     "drizzle-orm": "^0.45.0",
     "drizzle-zod": "^0.8.0",
     "ws": "^8.18.3",
@@ -31,6 +32,7 @@
     "@faker-js/faker": "^10.1.0",
     "@lome-chat/config": "workspace:*",
     "@types/ws": "^8.18.1",
+    "better-auth": "^1.4.7",
     "drizzle-kit": "^0.31.0",
     "fishery": "^2.4.0",
     "pg": "^8.16.3",

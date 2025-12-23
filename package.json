@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "@lome-chat/db": "workspace:*",
+    "@lome-chat/shared": "workspace:*",
     "@eslint/js": "^9.18.0",
     "@playwright/test": "^1.57.0",
     "@vitest/coverage-v8": "^4.0.16",

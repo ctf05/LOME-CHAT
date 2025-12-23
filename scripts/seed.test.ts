@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { personas, DEV_PASSWORD } from '@lome-chat/shared';
 
 // Mock drizzle-orm before importing
 vi.mock('drizzle-orm', () => ({
@@ -10,25 +11,30 @@ vi.mock('dotenv', () => ({
   config: vi.fn(),
 }));
 
-// Mock the db module before importing
-vi.mock('@lome-chat/db', () => ({
-  createDb: vi.fn(() => ({
-    select: vi.fn(() => ({
-      from: vi.fn(() => ({
-        where: vi.fn(() => ({
-          limit: vi.fn(() => Promise.resolve([])),
+// Mock hashPassword to return predictable value
+vi.mock('@lome-chat/db', () => {
+  return {
+    createDb: vi.fn(() => ({
+      select: vi.fn(() => ({
+        from: vi.fn(() => ({
+          where: vi.fn(() => ({
+            limit: vi.fn(() => Promise.resolve([])),
+          })),
         })),
       })),
+      insert: vi.fn(() => ({
+        values: vi.fn(() => Promise.resolve()),
+      })),
     })),
-    insert: vi.fn(() => ({
-      values: vi.fn(() => Promise.resolve()),
-    })),
-  })),
-  users: { id: 'id' },
-  conversations: { id: 'id' },
-  messages: { id: 'id' },
-  projects: { id: 'id' },
-}));
+    LOCAL_NEON_DEV_CONFIG: {},
+    users: { id: 'id' },
+    conversations: { id: 'id' },
+    messages: { id: 'id' },
+    projects: { id: 'id' },
+    accounts: { id: 'id' },
+    hashPassword: vi.fn(() => Promise.resolve('mocksalt:mockkey')),
+  };
+});
 
 vi.mock('@lome-chat/db/factories', () => ({
   userFactory: {
@@ -86,7 +92,14 @@ vi.mock('@lome-chat/db/factories', () => ({
   },
 }));
 
-import { SEED_CONFIG, generateSeedData, upsertEntity, seed, seedUUID } from './seed';
+import {
+  SEED_CONFIG,
+  generateSeedData,
+  generatePersonaData,
+  upsertEntity,
+  seed,
+  seedUUID,
+} from './seed';
 
 describe('seed script', () => {
   beforeEach(() => {
@@ -255,6 +268,97 @@ describe('seed script', () => {
     it('seeds all entities without throwing', async () => {
       // With mocked db, this should complete without errors
       await expect(seed()).resolves.not.toThrow();
+    });
+  });
+
+  describe('generatePersonaData', () => {
+    it('generates all three personas', async () => {
+      const data = await generatePersonaData();
+      expect(data.users).toHaveLength(3);
+    });
+
+    it('includes alice, bob, and charlie users', async () => {
+      const data = await generatePersonaData();
+      const emails = data.users.map((u) => u.email);
+      expect(emails).toContain('alice@example.com');
+      expect(emails).toContain('bob@example.com');
+      expect(emails).toContain('charlie@example.com');
+    });
+
+    it('uses fixed UUIDs from personas definition', async () => {
+      const data = await generatePersonaData();
+      const alice = data.users.find((u) => u.email === 'alice@example.com');
+      expect(alice?.id).toBe(personas.alice.id);
+    });
+
+    it('generates accounts for each persona', async () => {
+      const data = await generatePersonaData();
+      expect(data.accounts).toHaveLength(3);
+    });
+
+    it('links accounts to correct users', async () => {
+      const data = await generatePersonaData();
+      const aliceAccount = data.accounts.find((a) => a.userId === personas.alice.id);
+      expect(aliceAccount).toBeDefined();
+      expect(aliceAccount?.providerId).toBe('credential');
+    });
+
+    it('accounts have hashed passwords', async () => {
+      const data = await generatePersonaData();
+      for (const account of data.accounts) {
+        // Check password is set (mocked to 'mocksalt:mockkey')
+        expect(account.password).toBeDefined();
+        expect(account.password).not.toBe(DEV_PASSWORD);
+      }
+    });
+
+    it('generates sample data only for alice', async () => {
+      const data = await generatePersonaData();
+
+      // Alice should have projects
+      const aliceProjects = data.projects.filter((p) => p.userId === personas.alice.id);
+      expect(aliceProjects.length).toBeGreaterThan(0);
+
+      // Alice should have conversations
+      const aliceConversations = data.conversations.filter((c) => c.userId === personas.alice.id);
+      expect(aliceConversations.length).toBeGreaterThan(0);
+
+      // Bob should have no projects or conversations
+      const bobProjects = data.projects.filter((p) => p.userId === personas.bob.id);
+      const bobConversations = data.conversations.filter((c) => c.userId === personas.bob.id);
+      expect(bobProjects).toHaveLength(0);
+      expect(bobConversations).toHaveLength(0);
+
+      // Charlie should have no projects or conversations
+      const charlieProjects = data.projects.filter((p) => p.userId === personas.charlie.id);
+      const charlieConversations = data.conversations.filter(
+        (c) => c.userId === personas.charlie.id
+      );
+      expect(charlieProjects).toHaveLength(0);
+      expect(charlieConversations).toHaveLength(0);
+    });
+
+    it('alice has exactly 2 projects', async () => {
+      const data = await generatePersonaData();
+      const aliceProjects = data.projects.filter((p) => p.userId === personas.alice.id);
+      expect(aliceProjects).toHaveLength(2);
+    });
+
+    it('alice has exactly 3 conversations', async () => {
+      const data = await generatePersonaData();
+      const aliceConversations = data.conversations.filter((c) => c.userId === personas.alice.id);
+      expect(aliceConversations).toHaveLength(3);
+    });
+
+    it('sets emailVerified correctly from persona definition', async () => {
+      const data = await generatePersonaData();
+      const alice = data.users.find((u) => u.email === 'alice@example.com');
+      const bob = data.users.find((u) => u.email === 'bob@example.com');
+      const charlie = data.users.find((u) => u.email === 'charlie@example.com');
+
+      expect(alice?.emailVerified).toBe(true);
+      expect(bob?.emailVerified).toBe(true);
+      expect(charlie?.emailVerified).toBe(false);
     });
   });
 });
