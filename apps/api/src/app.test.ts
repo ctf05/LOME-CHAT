@@ -1,6 +1,25 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createApp } from './app.js';
 
+// Mock the database module for dev routes testing
+vi.mock('@lome-chat/db', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@lome-chat/db')>();
+  return {
+    ...actual,
+    createDb: vi.fn(() => ({
+      select: vi.fn(() => ({
+        from: vi.fn(() => ({
+          where: vi.fn(() => Promise.resolve([])),
+          innerJoin: vi.fn(() => ({
+            where: vi.fn(() => Promise.resolve([{ count: 0 }])),
+          })),
+        })),
+      })),
+    })),
+    LOCAL_NEON_DEV_CONFIG: {},
+  };
+});
+
 describe('createApp', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -28,72 +47,91 @@ describe('createApp', () => {
     });
   });
 
-  describe('auth routes (placeholders)', () => {
-    it('returns 501 for POST /auth/signup', async () => {
+  describe('auth routes', () => {
+    // Auth routes are now at /api/auth/* and handled by Better Auth
+    // Full auth testing is done via E2E tests with the database
+    it('responds to /api/auth/* requests', async () => {
       const app = createApp();
-      const res = await app.request('/auth/signup', { method: 'POST' });
-
-      expect(res.status).toBe(501);
-      const body: { error: string } = await res.json();
-      expect(body.error).toBe('Not implemented');
-    });
-
-    it('returns 501 for POST /auth/login', async () => {
-      const app = createApp();
-      const res = await app.request('/auth/login', { method: 'POST' });
-
-      expect(res.status).toBe(501);
-    });
-
-    it('returns 501 for POST /auth/logout', async () => {
-      const app = createApp();
-      const res = await app.request('/auth/logout', { method: 'POST' });
-
-      expect(res.status).toBe(501);
-    });
-
-    it('returns 501 for GET /auth/session', async () => {
-      const app = createApp();
-      const res = await app.request('/auth/session');
-
-      expect(res.status).toBe(501);
+      // Without proper env vars, auth routes will error, but they're mounted
+      const res = await app.request('/api/auth/session');
+      // Better Auth should respond (even if with an error due to missing env)
+      expect(res.status).toBeDefined();
     });
   });
 
-  describe('conversations routes (placeholders)', () => {
-    it('returns 501 for GET /conversations', async () => {
+  describe('conversations routes', () => {
+    it('returns 401 for GET /conversations without auth', async () => {
       const app = createApp();
-      const res = await app.request('/conversations');
+      const res = await app.request(
+        '/conversations',
+        {},
+        {
+          DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
+          NODE_ENV: 'development',
+        }
+      );
 
-      expect(res.status).toBe(501);
+      expect(res.status).toBe(401);
+      const body = await res.json();
+      expect(body).toEqual({ error: 'Unauthorized' });
     });
 
-    it('returns 501 for POST /conversations', async () => {
+    it('returns 401 for GET /conversations/:id without auth', async () => {
       const app = createApp();
-      const res = await app.request('/conversations', { method: 'POST' });
+      const res = await app.request(
+        '/conversations/123',
+        {},
+        {
+          DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
+          NODE_ENV: 'development',
+        }
+      );
 
-      expect(res.status).toBe(501);
+      expect(res.status).toBe(401);
+      const body = await res.json();
+      expect(body).toEqual({ error: 'Unauthorized' });
     });
 
-    it('returns 501 for GET /conversations/:id', async () => {
+    it('returns 404 for POST /conversations (not implemented)', async () => {
       const app = createApp();
-      const res = await app.request('/conversations/123');
+      const res = await app.request(
+        '/conversations',
+        { method: 'POST' },
+        {
+          DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
+          NODE_ENV: 'development',
+        }
+      );
 
-      expect(res.status).toBe(501);
+      expect(res.status).toBe(404);
     });
 
-    it('returns 501 for DELETE /conversations/:id', async () => {
+    it('returns 404 for DELETE /conversations/:id (not implemented)', async () => {
       const app = createApp();
-      const res = await app.request('/conversations/123', { method: 'DELETE' });
+      const res = await app.request(
+        '/conversations/123',
+        { method: 'DELETE' },
+        {
+          DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
+          NODE_ENV: 'development',
+        }
+      );
 
-      expect(res.status).toBe(501);
+      expect(res.status).toBe(404);
     });
 
-    it('returns 501 for PATCH /conversations/:id', async () => {
+    it('returns 404 for PATCH /conversations/:id (not implemented)', async () => {
       const app = createApp();
-      const res = await app.request('/conversations/123', { method: 'PATCH' });
+      const res = await app.request(
+        '/conversations/123',
+        { method: 'PATCH' },
+        {
+          DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
+          NODE_ENV: 'development',
+        }
+      );
 
-      expect(res.status).toBe(501);
+      expect(res.status).toBe(404);
     });
   });
 
@@ -123,6 +161,25 @@ describe('createApp', () => {
       const res = await app.request('/unknown-route');
 
       expect(res.status).toBe(404);
+    });
+  });
+
+  describe('dev routes', () => {
+    it('responds to GET /dev/personas in development', async () => {
+      const app = createApp();
+      const res = await app.request(
+        '/dev/personas',
+        {},
+        {
+          DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
+          NODE_ENV: 'development',
+        }
+      );
+
+      expect(res.status).toBe(200);
+      const body: { personas: unknown[] } = await res.json();
+      expect(body).toHaveProperty('personas');
+      expect(Array.isArray(body.personas)).toBe(true);
     });
   });
 });

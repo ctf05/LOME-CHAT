@@ -15,6 +15,12 @@ describe('envConfig', () => {
       expect(envConfig.vars.BETTER_AUTH_URL.production).toBe('https://api.lome-chat.com');
     });
 
+    it('has vars section with FRONTEND_URL', () => {
+      expect(envConfig.vars.FRONTEND_URL).toBeDefined();
+      expect(envConfig.vars.FRONTEND_URL.development).toBe('http://localhost:5173');
+      expect(envConfig.vars.FRONTEND_URL.production).toBe('https://lome-chat.com');
+    });
+
     it('has secrets section with DATABASE_URL', () => {
       expect(envConfig.secrets.DATABASE_URL).toBeDefined();
       expect(envConfig.secrets.DATABASE_URL.development).toContain('postgres://');
@@ -45,6 +51,7 @@ describe('envConfig', () => {
       expect(envConfig.workerVars).toContain('BETTER_AUTH_URL');
       expect(envConfig.workerVars).toContain('BETTER_AUTH_SECRET');
       expect(envConfig.workerVars).toContain('RESEND_API_KEY');
+      expect(envConfig.workerVars).toContain('FRONTEND_URL');
     });
 
     it('has localOnly section with MIGRATION_DATABASE_URL', () => {
@@ -97,6 +104,7 @@ describe('envSchema', () => {
       BETTER_AUTH_URL: 'http://localhost:8787',
       BETTER_AUTH_SECRET: 'a-secret-that-is-at-least-32-characters-long',
       RESEND_API_KEY: '',
+      FRONTEND_URL: 'http://localhost:5173',
       VITE_API_URL: 'http://localhost:8787',
     };
 
@@ -111,6 +119,7 @@ describe('envSchema', () => {
       BETTER_AUTH_URL: 'https://api.lome-chat.com',
       BETTER_AUTH_SECRET: 'a-production-secret-at-least-32-chars-long!!',
       RESEND_API_KEY: 're_123456789',
+      FRONTEND_URL: 'https://lome-chat.com',
       VITE_API_URL: 'https://api.lome-chat.com',
     };
 
@@ -124,6 +133,7 @@ describe('envSchema', () => {
       DATABASE_URL: 'postgres://localhost:5432/test',
       BETTER_AUTH_URL: 'http://localhost:8787',
       BETTER_AUTH_SECRET: 'a-secret-that-is-at-least-32-characters-long',
+      FRONTEND_URL: 'http://localhost:5173',
       VITE_API_URL: 'http://localhost:8787',
     };
 
@@ -136,6 +146,7 @@ describe('envSchema', () => {
       NODE_ENV: 'development',
       BETTER_AUTH_URL: 'http://localhost:8787',
       BETTER_AUTH_SECRET: 'a-secret-that-is-at-least-32-characters-long',
+      FRONTEND_URL: 'http://localhost:5173',
       VITE_API_URL: 'http://localhost:8787',
     };
 
@@ -149,6 +160,7 @@ describe('envSchema', () => {
       DATABASE_URL: 'postgres://localhost:5432/test',
       BETTER_AUTH_URL: 'http://localhost:8787',
       BETTER_AUTH_SECRET: 'too-short',
+      FRONTEND_URL: 'http://localhost:5173',
       VITE_API_URL: 'http://localhost:8787',
     };
 
@@ -162,6 +174,7 @@ describe('envSchema', () => {
       DATABASE_URL: 'postgres://localhost:5432/test',
       BETTER_AUTH_URL: 'not-a-url',
       BETTER_AUTH_SECRET: 'a-secret-that-is-at-least-32-characters-long',
+      FRONTEND_URL: 'http://localhost:5173',
       VITE_API_URL: 'http://localhost:8787',
     };
 
@@ -175,6 +188,7 @@ describe('envSchema', () => {
       DATABASE_URL: 'postgres://localhost:5432/test',
       BETTER_AUTH_URL: 'http://localhost:8787',
       BETTER_AUTH_SECRET: 'a-secret-that-is-at-least-32-characters-long',
+      FRONTEND_URL: 'http://localhost:5173',
       VITE_API_URL: 'http://localhost:8787',
     };
 

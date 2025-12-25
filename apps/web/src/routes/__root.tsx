@@ -1,6 +1,10 @@
-import { Outlet, createRootRoute } from '@tanstack/react-router';
+import { Outlet, createRootRoute, Navigate } from '@tanstack/react-router';
 import { QueryProvider } from '@/providers/query-provider';
 import { ThemeProvider } from '@/providers/theme-provider';
+
+function NotFoundRedirect(): React.JSX.Element {
+  return <Navigate to="/chat" />;
+}
 
 export const Route = createRootRoute({
   component: () => (
@@ -10,4 +14,5 @@ export const Route = createRootRoute({
       </QueryProvider>
     </ThemeProvider>
   ),
+  notFoundComponent: NotFoundRedirect,
 });

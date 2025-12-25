@@ -1,22 +1,48 @@
 import { Hono } from 'hono';
-import { cors, errorHandler } from './middleware/index.js';
-import { healthRoute, authRoute, conversationsRoute, chatRoute } from './routes/index.js';
+import {
+  cors,
+  devOnly,
+  errorHandler,
+  dbMiddleware,
+  authMiddleware,
+  sessionMiddleware,
+} from './middleware/index.js';
+import {
+  healthRoute,
+  chatRoute,
+  createDevRoute,
+  createConversationsRoutes,
+} from './routes/index.js';
+import type { AppEnv } from './types.js';
 
-export interface Bindings {
-  DATABASE_URL: string;
-  NODE_ENV?: string;
-}
+// Re-export Bindings for backwards compatibility
+export type { Bindings } from './types.js';
 
-export function createApp(): Hono<{ Bindings: Bindings }> {
-  const app = new Hono<{ Bindings: Bindings }>();
+export function createApp(): Hono<AppEnv> {
+  const app = new Hono<AppEnv>();
 
   app.use('*', cors());
   app.onError(errorHandler);
 
   app.route('/health', healthRoute);
-  app.route('/auth', authRoute);
-  app.route('/conversations', conversationsRoute);
+
+  app.use('/api/auth/*', dbMiddleware());
+  app.use('/api/auth/*', authMiddleware());
+  app.on(['POST', 'GET'], '/api/auth/*', (c) => {
+    const auth = c.get('auth');
+    return auth.handler(c.req.raw);
+  });
+
+  app.use('/conversations/*', dbMiddleware());
+  app.use('/conversations/*', authMiddleware());
+  app.use('/conversations/*', sessionMiddleware());
+  app.route('/conversations', createConversationsRoutes());
+
   app.route('/chat', chatRoute);
+
+  app.use('/dev/*', devOnly());
+  app.use('/dev/*', dbMiddleware());
+  app.route('/dev', createDevRoute());
 
   return app;
 }

@@ -24,17 +24,26 @@ export default defineConfig({
     },
   ],
   projects: [
+    // Setup project authenticates as each persona and saves storage state
+    {
+      name: 'setup',
+      testMatch: /auth\.setup\.ts/,
+    },
+    // Browser projects use Alice's auth state by default
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'], storageState: 'e2e/.auth/alice.json' },
+      dependencies: ['setup'],
     },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: { ...devices['Desktop Firefox'], storageState: 'e2e/.auth/alice.json' },
+      dependencies: ['setup'],
     },
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      use: { ...devices['Desktop Safari'], storageState: 'e2e/.auth/alice.json' },
+      dependencies: ['setup'],
     },
   ],
 });

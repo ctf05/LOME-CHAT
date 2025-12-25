@@ -29,6 +29,7 @@ coverage/
 # Playwright
 playwright-report/
 test-results/
+e2e/.auth/
 
 # Logs
 *.log
@@ -59,3 +60,6 @@ Thumbs.db
 *.tmp
 *.temp
 .cache/
+
+# TanStack Router
+.tanstack/

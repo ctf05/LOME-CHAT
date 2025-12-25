@@ -19,9 +19,17 @@ vi.mock('better-auth/react', () => ({
     signUp: {
       email: vi.fn(),
     },
-    signOut: vi.fn(),
+    signOut: vi.fn().mockResolvedValue({}),
     getSession: vi.fn(),
   })),
+}));
+
+// Mock query provider
+const mockQueryClient = {
+  clear: vi.fn(),
+};
+vi.mock('@/providers/query-provider', () => ({
+  queryClient: mockQueryClient,
 }));
 
 describe('auth client', () => {
@@ -102,5 +110,37 @@ describe('requireAuth', () => {
 
     expect(result).toEqual(mockSession);
     expect(redirect).not.toHaveBeenCalled();
+  });
+});
+
+describe('signOutAndClearCache', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    vi.clearAllMocks();
+  });
+
+  it('calls signOut and clears query cache', async () => {
+    const mockSignOut = vi.fn().mockResolvedValue({});
+    vi.doMock('better-auth/react', () => ({
+      createAuthClient: vi.fn(() => ({
+        useSession: vi.fn(),
+        signIn: { email: vi.fn() },
+        signUp: { email: vi.fn() },
+        signOut: mockSignOut,
+        getSession: vi.fn(),
+      })),
+    }));
+
+    const mockClear = vi.fn();
+    vi.doMock('@/providers/query-provider', () => ({
+      queryClient: { clear: mockClear },
+    }));
+
+    const { signOutAndClearCache } = await import('./auth');
+
+    await signOutAndClearCache();
+
+    expect(mockSignOut).toHaveBeenCalled();
+    expect(mockClear).toHaveBeenCalled();
   });
 });

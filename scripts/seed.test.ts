@@ -1,17 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { personas, DEV_PASSWORD } from '@lome-chat/shared';
+import { DEV_PASSWORD, DEV_EMAIL_DOMAIN } from '@lome-chat/shared';
 
-// Mock drizzle-orm before importing
 vi.mock('drizzle-orm', () => ({
   eq: vi.fn((col: unknown, val: unknown) => ({ col, val })),
 }));
 
-// Mock dotenv to prevent loading .env.development during tests
 vi.mock('dotenv', () => ({
   config: vi.fn(),
 }));
 
-// Mock hashPassword to return predictable value
 vi.mock('@lome-chat/db', () => {
   return {
     createDb: vi.fn(() => ({
@@ -148,10 +145,8 @@ describe('seed script', () => {
 
     it('generates deterministic user IDs as valid UUIDs', () => {
       const data = generateSeedData();
-      // Check that IDs are deterministic (same call produces same IDs)
       expect(data.users[0].id).toBe(seedUUID('seed-user-1'));
       expect(data.users[4].id).toBe(seedUUID('seed-user-5'));
-      // Check that IDs are valid UUID format
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       expect(data.users[0].id).toMatch(uuidRegex);
     });
@@ -203,7 +198,6 @@ describe('seed script', () => {
       const conv1Id = data.conversations[0].id;
       const conv1Messages = data.messages.filter((m) => m.conversationId === conv1Id);
 
-      // First message should be 'user', second 'assistant', etc.
       expect(conv1Messages[0].role).toBe('user');
       expect(conv1Messages[1].role).toBe('assistant');
       expect(conv1Messages[2].role).toBe('user');
@@ -266,7 +260,6 @@ describe('seed script', () => {
     });
 
     it('seeds all entities without throwing', async () => {
-      // With mocked db, this should complete without errors
       await expect(seed()).resolves.not.toThrow();
     });
   });
@@ -277,18 +270,18 @@ describe('seed script', () => {
       expect(data.users).toHaveLength(3);
     });
 
-    it('includes alice, bob, and charlie users', async () => {
+    it('includes alice, bob, and charlie users with dev domain', async () => {
       const data = await generatePersonaData();
       const emails = data.users.map((u) => u.email);
-      expect(emails).toContain('alice@example.com');
-      expect(emails).toContain('bob@example.com');
-      expect(emails).toContain('charlie@example.com');
+      expect(emails).toContain(`alice@${DEV_EMAIL_DOMAIN}`);
+      expect(emails).toContain(`bob@${DEV_EMAIL_DOMAIN}`);
+      expect(emails).toContain(`charlie@${DEV_EMAIL_DOMAIN}`);
     });
 
-    it('uses fixed UUIDs from personas definition', async () => {
+    it('uses deterministic UUIDs based on persona name', async () => {
       const data = await generatePersonaData();
-      const alice = data.users.find((u) => u.email === 'alice@example.com');
-      expect(alice?.id).toBe(personas.alice.id);
+      const alice = data.users.find((u) => u.email === `alice@${DEV_EMAIL_DOMAIN}`);
+      expect(alice?.id).toBe(seedUUID('dev-user-alice'));
     });
 
     it('generates accounts for each persona', async () => {
@@ -298,7 +291,8 @@ describe('seed script', () => {
 
     it('links accounts to correct users', async () => {
       const data = await generatePersonaData();
-      const aliceAccount = data.accounts.find((a) => a.userId === personas.alice.id);
+      const aliceId = seedUUID('dev-user-alice');
+      const aliceAccount = data.accounts.find((a) => a.userId === aliceId);
       expect(aliceAccount).toBeDefined();
       expect(aliceAccount?.providerId).toBe('credential');
     });
@@ -306,55 +300,53 @@ describe('seed script', () => {
     it('accounts have hashed passwords', async () => {
       const data = await generatePersonaData();
       for (const account of data.accounts) {
-        // Check password is set (mocked to 'mocksalt:mockkey')
         expect(account.password).toBeDefined();
         expect(account.password).not.toBe(DEV_PASSWORD);
       }
     });
 
-    it('generates sample data only for alice', async () => {
+    it('generates sample data only for alice (hasSampleData=true)', async () => {
       const data = await generatePersonaData();
+      const aliceId = seedUUID('dev-user-alice');
+      const bobId = seedUUID('dev-user-bob');
+      const charlieId = seedUUID('dev-user-charlie');
 
-      // Alice should have projects
-      const aliceProjects = data.projects.filter((p) => p.userId === personas.alice.id);
+      const aliceProjects = data.projects.filter((p) => p.userId === aliceId);
       expect(aliceProjects.length).toBeGreaterThan(0);
 
-      // Alice should have conversations
-      const aliceConversations = data.conversations.filter((c) => c.userId === personas.alice.id);
+      const aliceConversations = data.conversations.filter((c) => c.userId === aliceId);
       expect(aliceConversations.length).toBeGreaterThan(0);
 
-      // Bob should have no projects or conversations
-      const bobProjects = data.projects.filter((p) => p.userId === personas.bob.id);
-      const bobConversations = data.conversations.filter((c) => c.userId === personas.bob.id);
+      const bobProjects = data.projects.filter((p) => p.userId === bobId);
+      const bobConversations = data.conversations.filter((c) => c.userId === bobId);
       expect(bobProjects).toHaveLength(0);
       expect(bobConversations).toHaveLength(0);
 
-      // Charlie should have no projects or conversations
-      const charlieProjects = data.projects.filter((p) => p.userId === personas.charlie.id);
-      const charlieConversations = data.conversations.filter(
-        (c) => c.userId === personas.charlie.id
-      );
+      const charlieProjects = data.projects.filter((p) => p.userId === charlieId);
+      const charlieConversations = data.conversations.filter((c) => c.userId === charlieId);
       expect(charlieProjects).toHaveLength(0);
       expect(charlieConversations).toHaveLength(0);
     });
 
     it('alice has exactly 2 projects', async () => {
       const data = await generatePersonaData();
-      const aliceProjects = data.projects.filter((p) => p.userId === personas.alice.id);
+      const aliceId = seedUUID('dev-user-alice');
+      const aliceProjects = data.projects.filter((p) => p.userId === aliceId);
       expect(aliceProjects).toHaveLength(2);
     });
 
     it('alice has exactly 3 conversations', async () => {
       const data = await generatePersonaData();
-      const aliceConversations = data.conversations.filter((c) => c.userId === personas.alice.id);
+      const aliceId = seedUUID('dev-user-alice');
+      const aliceConversations = data.conversations.filter((c) => c.userId === aliceId);
       expect(aliceConversations).toHaveLength(3);
     });
 
     it('sets emailVerified correctly from persona definition', async () => {
       const data = await generatePersonaData();
-      const alice = data.users.find((u) => u.email === 'alice@example.com');
-      const bob = data.users.find((u) => u.email === 'bob@example.com');
-      const charlie = data.users.find((u) => u.email === 'charlie@example.com');
+      const alice = data.users.find((u) => u.email === `alice@${DEV_EMAIL_DOMAIN}`);
+      const bob = data.users.find((u) => u.email === `bob@${DEV_EMAIL_DOMAIN}`);
+      const charlie = data.users.find((u) => u.email === `charlie@${DEV_EMAIL_DOMAIN}`);
 
       expect(alice?.emailVerified).toBe(true);
       expect(bob?.emailVerified).toBe(true);

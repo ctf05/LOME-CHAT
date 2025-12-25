@@ -9,12 +9,14 @@ export interface AuthConfig {
   emailClient: EmailClient;
   baseUrl: string;
   secret: string;
+  frontendUrl: string;
 }
 
 export function createAuth(config: AuthConfig): ReturnType<typeof betterAuth> {
   return betterAuth({
     baseURL: config.baseUrl,
     secret: config.secret,
+    trustedOrigins: [config.frontendUrl],
     database: drizzleAdapter(config.db, {
       provider: 'pg',
       schema: {

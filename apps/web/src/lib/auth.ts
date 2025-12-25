@@ -1,6 +1,7 @@
 import { createAuthClient } from 'better-auth/react';
 import { redirect } from '@tanstack/react-router';
 import { frontendEnvSchema } from '@lome-chat/shared';
+import { queryClient } from '@/providers/query-provider';
 
 const env = frontendEnvSchema.parse({
   VITE_API_URL: import.meta.env['VITE_API_URL'] as unknown,
@@ -23,4 +24,14 @@ export async function requireAuth(): Promise<{
     throw redirect({ to: '/login' });
   }
   return session.data;
+}
+
+/**
+ * Signs out the current user and clears the TanStack Query cache.
+ * This ensures that cached data from the previous user doesn't leak
+ * to the next user.
+ */
+export async function signOutAndClearCache(): Promise<void> {
+  await authClient.signOut();
+  queryClient.clear();
 }

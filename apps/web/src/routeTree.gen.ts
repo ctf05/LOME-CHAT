@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DevPersonasRouteImport } from './routes/dev.personas'
 import { Route as AuthVerifyRouteImport } from './routes/_auth/verify'
 import { Route as AuthSignupRouteImport } from './routes/_auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
@@ -30,6 +31,11 @@ const AppRoute = AppRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevPersonasRoute = DevPersonasRouteImport.update({
+  id: '/dev/personas',
+  path: '/dev/personas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthVerifyRoute = AuthVerifyRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
   '/verify': typeof AuthVerifyRoute
+  '/dev/personas': typeof DevPersonasRoute
   '/chat/$conversationId': typeof AppChatConversationIdRoute
   '/chat': typeof AppChatIndexRoute
 }
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/signup': typeof AuthSignupRoute
   '/verify': typeof AuthVerifyRoute
+  '/dev/personas': typeof DevPersonasRoute
   '/chat/$conversationId': typeof AppChatConversationIdRoute
   '/chat': typeof AppChatIndexRoute
 }
@@ -90,6 +98,7 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/signup': typeof AuthSignupRoute
   '/_auth/verify': typeof AuthVerifyRoute
+  '/dev/personas': typeof DevPersonasRoute
   '/_app/chat/$conversationId': typeof AppChatConversationIdRoute
   '/_app/chat/': typeof AppChatIndexRoute
 }
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/verify'
+    | '/dev/personas'
     | '/chat/$conversationId'
     | '/chat'
   fileRoutesByTo: FileRoutesByTo
@@ -110,6 +120,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/verify'
+    | '/dev/personas'
     | '/chat/$conversationId'
     | '/chat'
   id:
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/_auth/login'
     | '/_auth/signup'
     | '/_auth/verify'
+    | '/dev/personas'
     | '/_app/chat/$conversationId'
     | '/_app/chat/'
   fileRoutesById: FileRoutesById
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
+  DevPersonasRoute: typeof DevPersonasRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -152,6 +165,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dev/personas': {
+      id: '/dev/personas'
+      path: '/dev/personas'
+      fullPath: '/dev/personas'
+      preLoaderRoute: typeof DevPersonasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/verify': {
@@ -231,6 +251,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
+  DevPersonasRoute: DevPersonasRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

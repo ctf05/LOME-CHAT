@@ -1,11 +1,9 @@
 import * as React from 'react';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Navigate } from '@tanstack/react-router';
 import { ChatHeader } from '@/components/chat/chat-header';
 import { MessageList } from '@/components/chat/message-list';
 import { MessageInput } from '@/components/chat/message-input';
-import { EmptyChat } from '@/components/chat/empty-chat';
 import { useConversation, useMessages } from '@/hooks/chat';
-import { useSession } from '@/lib/auth';
 import type { Message } from '@/lib/api';
 
 export const Route = createFileRoute('/_app/chat/$conversationId')({
@@ -15,12 +13,16 @@ export const Route = createFileRoute('/_app/chat/$conversationId')({
 function ChatConversation(): React.JSX.Element {
   const { conversationId } = Route.useParams();
   const isNewChat = conversationId === 'new';
-  const { data: session } = useSession();
-  const isAuthenticated = Boolean(session?.user);
 
   // Fetch real data for existing conversations
-  const { data: conversation } = useConversation(isNewChat ? '' : conversationId);
-  const { data: apiMessages, isLoading } = useMessages(isNewChat ? '' : conversationId);
+  const { data: conversation, isLoading: isConversationLoading } = useConversation(
+    isNewChat ? '' : conversationId
+  );
+  const { data: apiMessages, isLoading: isMessagesLoading } = useMessages(
+    isNewChat ? '' : conversationId
+  );
+
+  const isLoading = isConversationLoading || isMessagesLoading;
 
   // Local messages for new chat (before API create)
   const [localMessages, setLocalMessages] = React.useState<Message[]>([]);
@@ -56,10 +58,6 @@ function ChatConversation(): React.JSX.Element {
     }, 500);
   };
 
-  const handleSuggestionClick = (prompt: string): void => {
-    handleSend(prompt);
-  };
-
   // Determine the chat title
   const chatTitle = isNewChat
     ? 'New Chat'
@@ -76,15 +74,16 @@ function ChatConversation(): React.JSX.Element {
     );
   }
 
+  // Redirect to /chat if conversation doesn't exist
+  if (!isNewChat && !isLoading && !conversation) {
+    return <Navigate to="/chat" />;
+  }
+
   return (
     <div className="flex h-full flex-col">
       <ChatHeader title={chatTitle} />
       <div className="flex flex-1 flex-col overflow-hidden">
-        {allMessages.length === 0 ? (
-          <EmptyChat onSuggestionClick={handleSuggestionClick} isAuthenticated={isAuthenticated} />
-        ) : (
-          <MessageList messages={allMessages} />
-        )}
+        {allMessages.length > 0 && <MessageList messages={allMessages} />}
       </div>
       <div className="border-t">
         <MessageInput onSend={handleSend} />

@@ -22,6 +22,7 @@ describe('createAuth', () => {
       emailClient,
       baseUrl: 'http://localhost:8787',
       secret: 'test-secret-key-at-least-32-chars',
+      frontendUrl: 'http://localhost:5173',
     });
 
     expect(auth).toBeDefined();
@@ -36,6 +37,7 @@ describe('createAuth', () => {
       emailClient,
       baseUrl: 'http://localhost:8787',
       secret: 'test-secret-key-at-least-32-chars',
+      frontendUrl: 'http://localhost:5173',
     });
 
     expect(auth.api).toBeDefined();
@@ -50,6 +52,7 @@ describe('createAuth', () => {
       emailClient,
       baseUrl: 'http://localhost:8787',
       secret: 'test-secret-key-at-least-32-chars',
+      frontendUrl: 'http://localhost:5173',
     });
 
     // The auth object is created with our configuration
@@ -69,6 +72,7 @@ describe('createAuth', () => {
         emailClient,
         baseUrl: 'http://localhost:8787',
         secret: 'test-secret-key-at-least-32-chars',
+        frontendUrl: 'http://localhost:5173',
       })
     ).not.toThrow();
   });
@@ -91,6 +95,7 @@ describe('auth configuration options', () => {
         emailClient,
         baseUrl: 'https://api.lome-chat.com',
         secret: 'test-secret-key-at-least-32-chars',
+        frontendUrl: 'https://lome-chat.com',
       })
     ).not.toThrow();
   });
@@ -104,6 +109,7 @@ describe('auth configuration options', () => {
         emailClient,
         baseUrl: 'http://localhost:8787',
         secret: 'a-very-long-secret-key-for-signing-sessions',
+        frontendUrl: 'http://localhost:5173',
       })
     ).not.toThrow();
   });

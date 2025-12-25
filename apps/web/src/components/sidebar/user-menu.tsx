@@ -12,7 +12,7 @@ import {
 } from '@lome-chat/ui';
 import { LogOut, Settings, User } from 'lucide-react';
 import { useUIStore } from '@/stores/ui';
-import { authClient } from '@/lib/auth';
+import { signOutAndClearCache } from '@/lib/auth';
 
 interface UserMenuUser {
   name: string;
@@ -43,7 +43,7 @@ export function UserMenu({
   const sidebarOpen = useUIStore((state) => state.sidebarOpen);
 
   const handleSignOut = async (): Promise<void> => {
-    await authClient.signOut();
+    await signOutAndClearCache();
   };
 
   return (

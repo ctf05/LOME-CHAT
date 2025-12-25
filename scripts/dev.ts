@@ -2,6 +2,7 @@ import { execa } from 'execa';
 import { config } from 'dotenv';
 import { resolve } from 'path';
 import { generateEnvFiles } from './generate-env.js';
+import { seed } from './seed.js';
 
 const DOCKER_SERVICES = ['postgres', 'neon-proxy'];
 
@@ -29,6 +30,11 @@ export async function runMigrations(): Promise<void> {
   console.log('Migrations complete');
 }
 
+export async function runSeed(): Promise<void> {
+  console.log('Seeding database...');
+  await seed();
+}
+
 export async function startTurbo(): Promise<void> {
   console.log('Starting dev servers...');
   await execa('turbo', ['dev'], {
@@ -42,6 +48,7 @@ export async function main(): Promise<void> {
   loadEnv();
   await startDocker();
   await runMigrations();
+  await runSeed();
   await startTurbo();
 }
 

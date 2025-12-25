@@ -1,35 +1,19 @@
 import { Hono } from 'hono';
 import { eq, desc, and } from 'drizzle-orm';
-import type { createDb } from '@lome-chat/db';
 import { conversations, messages } from '@lome-chat/db';
-import type { createAuth } from '../auth/index.js';
+import type { AppEnv } from '../types.js';
 
-type Db = ReturnType<typeof createDb>;
-type Auth = ReturnType<typeof createAuth>;
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-}
-
-interface Env {
-  Variables: {
-    user: User | null;
-    session: unknown;
-  };
-}
-
-export function createConversationsRoutes(
-  db: Db,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- reserved for future auth middleware
-  _auth: Auth
-): Hono<Env> {
-  const app = new Hono<Env>();
+/**
+ * Creates conversations routes.
+ * Requires dbMiddleware, authMiddleware, and sessionMiddleware to be applied.
+ */
+export function createConversationsRoutes(): Hono<AppEnv> {
+  const app = new Hono<AppEnv>();
 
   // GET / - List all conversations for authenticated user
   app.get('/', async (c) => {
     const user = c.get('user');
+    const db = c.get('db');
 
     if (!user) {
       return c.json({ error: 'Unauthorized' }, 401);
@@ -47,6 +31,7 @@ export function createConversationsRoutes(
   // GET /:id - Get single conversation with messages
   app.get('/:id', async (c) => {
     const user = c.get('user');
+    const db = c.get('db');
 
     if (!user) {
       return c.json({ error: 'Unauthorized' }, 401);

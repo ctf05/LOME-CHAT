@@ -15,7 +15,8 @@ import { createConversationsRoutes } from './conversations.js';
 import { createAuthRoutes } from './auth.js';
 import { createAuth } from '../auth/index.js';
 import { createMockEmailClient } from '../services/email/index.js';
-import { createSessionMiddleware } from '../middleware/session.js';
+import { sessionMiddleware } from '../middleware/dependencies.js';
+import type { AppEnv } from '../types.js';
 
 // Response types for type-safe JSON parsing
 interface SignupResponse {
@@ -54,7 +55,7 @@ describe('conversations routes', () => {
   const connectionString =
     process.env['DATABASE_URL'] ?? 'postgres://postgres:postgres@localhost:4444/lome_chat';
   let db: ReturnType<typeof createDb>;
-  let app: Hono;
+  let app: Hono<AppEnv>;
   let testUserId: string;
   let authCookie: string;
 
@@ -75,13 +76,20 @@ describe('conversations routes', () => {
       emailClient,
       baseUrl: 'http://localhost:8787',
       secret: 'test-secret-key-at-least-32-characters-long',
+      frontendUrl: 'http://localhost:5173',
     });
 
     // Create the app with auth and conversation routes
-    app = new Hono();
-    app.use('*', createSessionMiddleware(auth));
+    app = new Hono<AppEnv>();
+    // Set db and auth on context for all routes
+    app.use('*', async (c, next) => {
+      c.set('db', db);
+      c.set('auth', auth);
+      await next();
+    });
+    app.use('*', sessionMiddleware());
     app.route('/api/auth', createAuthRoutes(auth));
-    app.route('/conversations', createConversationsRoutes(db, auth));
+    app.route('/conversations', createConversationsRoutes());
 
     // Create user via HTTP request to auth endpoint
     const signupRes = await app.request('/api/auth/sign-up/email', {

@@ -18,6 +18,10 @@ export const envConfig = {
       development: 'http://localhost:8787',
       production: 'https://api.lome-chat.com',
     },
+    FRONTEND_URL: {
+      development: 'http://localhost:5173',
+      production: 'https://lome-chat.com',
+    },
   },
 
   // Secret variables (no production values in code!)
@@ -56,6 +60,7 @@ export const envConfig = {
     'BETTER_AUTH_URL',
     'BETTER_AUTH_SECRET',
     'RESEND_API_KEY',
+    'FRONTEND_URL',
   ],
 } as const;
 
@@ -66,6 +71,7 @@ export const envSchema = z.object({
   BETTER_AUTH_URL: z.string().url(),
   BETTER_AUTH_SECRET: z.string().min(32),
   RESEND_API_KEY: z.string().optional(),
+  FRONTEND_URL: z.string().url(),
   VITE_API_URL: z.string().url(),
 });
 

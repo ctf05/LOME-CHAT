@@ -18,7 +18,32 @@ import {
   messageFactory,
   projectFactory,
 } from '@lome-chat/db/factories';
-import { personas, DEV_PASSWORD } from '@lome-chat/shared';
+import { DEV_PASSWORD, DEV_EMAIL_DOMAIN } from '@lome-chat/shared';
+
+const DEV_PERSONAS = [
+  {
+    name: 'alice',
+    displayName: 'Alice Developer',
+    emailVerified: true,
+    hasSampleData: true,
+  },
+  {
+    name: 'bob',
+    displayName: 'Bob Tester',
+    emailVerified: true,
+    hasSampleData: false,
+  },
+  {
+    name: 'charlie',
+    displayName: 'Charlie Unverified',
+    emailVerified: false,
+    hasSampleData: false,
+  },
+] as const;
+
+function devEmail(name: string): string {
+  return `${name}@${DEV_EMAIL_DOMAIN}`;
+}
 
 export const SEED_CONFIG = {
   USER_COUNT: 5,
@@ -27,8 +52,6 @@ export const SEED_CONFIG = {
   MESSAGES_PER_CONVERSATION: 5,
 } as const;
 
-// Generate deterministic UUIDs for seeding (based on namespace)
-// Format: 00000000-0000-4000-8000-{12 hex digits from name}
 export function seedUUID(name: string): string {
   // Create a simple hash of the name and format as UUID
   let hash = 0;
@@ -68,7 +91,6 @@ export function generateSeedData(): SeedData {
   const seedConversations: Conversation[] = [];
   const seedMessages: Message[] = [];
 
-  // Generate users - let faker generate realistic names and emails
   for (let i = 0; i < SEED_CONFIG.USER_COUNT; i++) {
     const userId = seedUUID(`seed-user-${String(i + 1)}`);
     seedUsers.push(
@@ -77,7 +99,6 @@ export function generateSeedData(): SeedData {
       })
     );
 
-    // Generate projects for this user - let faker generate realistic names
     for (let j = 0; j < SEED_CONFIG.PROJECTS_PER_USER; j++) {
       seedProjects.push(
         projectFactory.build({
@@ -87,7 +108,6 @@ export function generateSeedData(): SeedData {
       );
     }
 
-    // Generate conversations for this user - let faker generate realistic titles
     for (let j = 0; j < SEED_CONFIG.CONVERSATIONS_PER_USER; j++) {
       const convId = seedUUID(`seed-conv-${String(i + 1)}-${String(j + 1)}`);
       seedConversations.push(
@@ -97,7 +117,6 @@ export function generateSeedData(): SeedData {
         })
       );
 
-      // Generate messages for this conversation - let faker generate realistic content
       for (let k = 0; k < SEED_CONFIG.MESSAGES_PER_CONVERSATION; k++) {
         const role = k % 2 === 0 ? 'user' : 'assistant';
         seedMessages.push(
@@ -120,10 +139,6 @@ export function generateSeedData(): SeedData {
   };
 }
 
-/**
- * Generates persona data for development users (alice, bob, charlie).
- * These users have fixed UUIDs and known passwords for easy login during development.
- */
 export async function generatePersonaData(): Promise<PersonaData> {
   const personaUsers: User[] = [];
   const personaAccounts: Account[] = [];
@@ -131,16 +146,17 @@ export async function generatePersonaData(): Promise<PersonaData> {
   const personaConversations: Conversation[] = [];
   const personaMessages: Message[] = [];
 
-  // Hash the dev password once (same for all personas)
   const hashedPassword = await hashPassword(DEV_PASSWORD);
   const now = new Date();
 
-  // Create users and accounts for each persona
-  for (const [name, persona] of Object.entries(personas)) {
+  for (const persona of DEV_PERSONAS) {
+    const userId = seedUUID(`dev-user-${persona.name}`);
+    const email = devEmail(persona.name);
+
     personaUsers.push({
-      id: persona.id,
-      email: persona.email,
-      name: persona.name,
+      id: userId,
+      email,
+      name: persona.displayName,
       emailVerified: persona.emailVerified,
       image: null,
       createdAt: now,
@@ -148,9 +164,9 @@ export async function generatePersonaData(): Promise<PersonaData> {
     });
 
     personaAccounts.push({
-      id: seedUUID(`account-${name}`),
-      userId: persona.id,
-      accountId: persona.email,
+      id: seedUUID(`account-${persona.name}`),
+      userId,
+      accountId: email,
       providerId: 'credential',
       password: hashedPassword,
       accessToken: null,
@@ -162,43 +178,39 @@ export async function generatePersonaData(): Promise<PersonaData> {
       createdAt: now,
       updatedAt: now,
     });
-  }
 
-  // Generate sample data only for Alice
-  const aliceId = personas.alice.id;
+    if (persona.hasSampleData) {
+      for (let i = 0; i < 2; i++) {
+        personaProjects.push(
+          projectFactory.build({
+            id: seedUUID(`${persona.name}-project-${String(i + 1)}`),
+            userId,
+          })
+        );
+      }
 
-  // 2 projects for Alice
-  for (let i = 0; i < 2; i++) {
-    personaProjects.push(
-      projectFactory.build({
-        id: seedUUID(`alice-project-${String(i + 1)}`),
-        userId: aliceId,
-      })
-    );
-  }
+      for (let i = 0; i < 3; i++) {
+        const convId = seedUUID(`${persona.name}-conv-${String(i + 1)}`);
+        personaConversations.push(
+          conversationFactory.build({
+            id: convId,
+            userId,
+          })
+        );
 
-  // 3 conversations for Alice (2 in first project, 1 without project)
-  for (let i = 0; i < 3; i++) {
-    const convId = seedUUID(`alice-conv-${String(i + 1)}`);
-    personaConversations.push(
-      conversationFactory.build({
-        id: convId,
-        userId: aliceId,
-      })
-    );
-
-    // 3-5 messages per conversation
-    const messageCount = 3 + (i % 3); // 3, 4, 5 messages
-    for (let j = 0; j < messageCount; j++) {
-      const role = j % 2 === 0 ? 'user' : 'assistant';
-      personaMessages.push(
-        messageFactory.build({
-          id: seedUUID(`alice-msg-${String(i + 1)}-${String(j + 1)}`),
-          conversationId: convId,
-          role,
-          model: role === 'assistant' ? 'gpt-4' : null,
-        })
-      );
+        const messageCount = 3 + (i % 3);
+        for (let j = 0; j < messageCount; j++) {
+          const role = j % 2 === 0 ? 'user' : 'assistant';
+          personaMessages.push(
+            messageFactory.build({
+              id: seedUUID(`${persona.name}-msg-${String(i + 1)}-${String(j + 1)}`),
+              conversationId: convId,
+              role,
+              model: role === 'assistant' ? 'gpt-4' : null,
+            })
+          );
+        }
+      }
     }
   }
 
@@ -234,8 +246,6 @@ export async function upsertEntity(
 }
 
 export async function seed(): Promise<void> {
-  // Check if DATABASE_URL is already set (e.g., in tests or CI)
-  // If not, load from .env.development
   if (!process.env.DATABASE_URL) {
     const envPath = resolve(process.cwd(), '.env.development');
     config({ path: envPath });
@@ -251,7 +261,6 @@ export async function seed(): Promise<void> {
     neonDev: LOCAL_NEON_DEV_CONFIG,
   });
 
-  // Generate both regular seed data and persona data
   const data = generateSeedData();
   const personaData = await generatePersonaData();
 
@@ -271,7 +280,6 @@ export async function seed(): Promise<void> {
   console.log(`  Messages: ${String(data.messages.length)}`);
   console.log('');
 
-  // Seed persona users first (they have accounts)
   let created = 0;
   let exists = 0;
   for (const user of personaData.users) {
@@ -281,7 +289,6 @@ export async function seed(): Promise<void> {
   }
   console.log(`Persona Users: ${String(created)} created, ${String(exists)} already existed`);
 
-  // Seed persona accounts
   created = 0;
   exists = 0;
   for (const account of personaData.accounts) {
@@ -291,7 +298,6 @@ export async function seed(): Promise<void> {
   }
   console.log(`Persona Accounts: ${String(created)} created, ${String(exists)} already existed`);
 
-  // Seed regular users
   created = 0;
   exists = 0;
   for (const user of data.users) {
@@ -301,7 +307,6 @@ export async function seed(): Promise<void> {
   }
   console.log(`Random Users: ${String(created)} created, ${String(exists)} already existed`);
 
-  // Seed all projects (persona + random)
   created = 0;
   exists = 0;
   for (const project of [...personaData.projects, ...data.projects]) {
@@ -311,7 +316,6 @@ export async function seed(): Promise<void> {
   }
   console.log(`Projects: ${String(created)} created, ${String(exists)} already existed`);
 
-  // Seed all conversations (persona + random)
   created = 0;
   exists = 0;
   for (const conv of [...personaData.conversations, ...data.conversations]) {
@@ -321,7 +325,6 @@ export async function seed(): Promise<void> {
   }
   console.log(`Conversations: ${String(created)} created, ${String(exists)} already existed`);
 
-  // Seed all messages (persona + random)
   created = 0;
   exists = 0;
   for (const msg of [...personaData.messages, ...data.messages]) {
@@ -334,7 +337,6 @@ export async function seed(): Promise<void> {
   console.log('\nSeed complete!');
 }
 
-// Only run if this is the entry point
 const isMain = import.meta.url === `file://${String(process.argv[1])}`;
 if (isMain) {
   seed().catch((error: unknown) => {

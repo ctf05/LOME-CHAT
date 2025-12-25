@@ -4,6 +4,7 @@
 name = "lome-chat-api"
 main = "src/index.ts"
 compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
 
 [dev]
 port = 8787
@@ -11,6 +12,7 @@ local_protocol = "http"
 [vars]
 NODE_ENV = "production"
 BETTER_AUTH_URL = "https://api.lome-chat.com"
+FRONTEND_URL = "https://lome-chat.com"
 
 # Secrets deployed via CI (GitHub Secrets → wrangler secret put):
 # - DATABASE_URL

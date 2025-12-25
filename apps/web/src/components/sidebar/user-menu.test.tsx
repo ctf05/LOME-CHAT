@@ -4,11 +4,13 @@ import userEvent from '@testing-library/user-event';
 import { UserMenu } from './user-menu';
 import { useUIStore } from '@/stores/ui';
 
-// Mock auth client
+// Mock signOutAndClearCache - use vi.hoisted for mock values referenced in vi.mock factory
+const { mockSignOutAndClearCache } = vi.hoisted(() => ({
+  mockSignOutAndClearCache: vi.fn().mockResolvedValue(undefined),
+}));
+
 vi.mock('@/lib/auth', () => ({
-  authClient: {
-    signOut: vi.fn(),
-  },
+  signOutAndClearCache: mockSignOutAndClearCache,
 }));
 
 describe('UserMenu', () => {
@@ -64,6 +66,16 @@ describe('UserMenu', () => {
 
       await user.click(screen.getByTestId('user-menu-trigger'));
       expect(screen.getByRole('menuitem', { name: /sign out/i })).toBeInTheDocument();
+    });
+
+    it('calls signOutAndClearCache when Sign out is clicked', async () => {
+      const user = userEvent.setup();
+      render(<UserMenu user={mockUser} />);
+
+      await user.click(screen.getByTestId('user-menu-trigger'));
+      await user.click(screen.getByRole('menuitem', { name: /sign out/i }));
+
+      expect(mockSignOutAndClearCache).toHaveBeenCalled();
     });
   });
 

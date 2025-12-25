@@ -342,13 +342,13 @@ Commit this file with progress updates to maintain state across sessions.
 
 **Purpose:** Set up typed environment variable handling.
 
-- [ ] Create `packages/shared/env.ts` with Zod validation
-- [ ] Define all environment variables with defaults for dev
-- [ ] Create `.env.example` with all variables documented
-- [ ] Configure Vite env exposure (VITE\_ prefix)
-- [ ] Configure Wrangler env/secrets separation
-- [ ] Add startup validation that fails fast on missing vars
-- [ ] Document secret vs non-secret variables
+- [x] Create `packages/shared/env.ts` with Zod validation
+- [x] Define all environment variables with defaults for dev
+- [x] Create `.env.example` with all variables documented
+- [x] Configure Vite env exposure (VITE\_ prefix)
+- [x] Configure Wrangler env/secrets separation
+- [x] Add startup validation that fails fast on missing vars
+- [x] Document secret vs non-secret variables
 
 ---
 
@@ -420,15 +420,15 @@ Select email client based on environment
 - [x] Add `pnpm db:seed` script to root package.json _(done in Phase 14)_
 - [x] Add API server to Playwright webServer config
 
-### Frontend (Pending - Requires Phase 16 Frontend)
+### Frontend (Complete)
 
-- [ ] Create dev-only persona page at `apps/web/routes/_dev/personas.tsx`
-- [ ] Gate route with `import.meta.env.DEV` for dead code elimination
-- [ ] Implement instant login on persona card click
-- [ ] Create Playwright auth fixture in `e2e/fixtures/auth.ts`
-- [ ] Generate storageState per persona on each CI run
-- [ ] Test persona page login flow
-- [ ] Test E2E with pre-authenticated personas
+- [x] Create dev-only persona page at `apps/web/routes/dev.personas.tsx`
+- [x] Gate route with `import.meta.env.DEV` for dead code elimination
+- [x] Implement instant login on persona card click
+- [x] Create Playwright auth fixture in `e2e/auth.setup.ts`
+- [x] Generate storageState per persona on each CI run
+- [x] Test persona page login flow
+- [x] Test E2E with pre-authenticated personas
 
 ---
 

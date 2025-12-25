@@ -18,6 +18,7 @@ describe('auth routes', () => {
       emailClient,
       baseUrl: 'http://localhost:8787',
       secret: 'test-secret-key-at-least-32-chars',
+      frontendUrl: 'http://localhost:5173',
     });
     app = new Hono();
     app.route('/api/auth', createAuthRoutes(auth));
