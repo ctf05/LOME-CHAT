@@ -92,7 +92,7 @@ export function PersonasPage(): React.JSX.Element {
           <button
             key={persona.id}
             type="button"
-            data-testid={`persona-card-${persona.id}`}
+            data-testid={`persona-card-${persona.email.split('@')[0] ?? ''}`}
             data-persona={persona.id}
             aria-busy={loadingPersonaId === persona.id}
             aria-disabled={isAuthenticating}

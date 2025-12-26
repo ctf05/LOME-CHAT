@@ -436,23 +436,23 @@ Select email client based on environment
 
 **Purpose:** Build the core chat interface (no AI yet).
 
-- [ ] Create chat layout component (sidebar + main area)
-- [ ] Create conversation list component
-- [ ] Create message list component
-- [ ] Create message input component
-- [ ] Create empty state component
-- [ ] Implement conversation CRUD API:
-  - [ ] `GET /conversations`
-  - [ ] `POST /conversations`
-  - [ ] `GET /conversations/:id`
-  - [ ] `DELETE /conversations/:id`
-  - [ ] `PATCH /conversations/:id` (rename)
-- [ ] Implement message API:
-  - [ ] `GET /conversations/:id/messages`
-  - [ ] `POST /conversations/:id/messages`
-- [ ] Add OpenAPI generation from Zod schemas using @hono/zod-openapi
-- [ ] Wire up frontend to API
-- [ ] Test creating conversations and messages (stored in DB, no AI response)
+- [x] Create chat layout component (sidebar + main area)
+- [x] Create conversation list component
+- [x] Create message list component
+- [x] Create message input component
+- [x] Create empty state component
+- [x] Implement conversation CRUD API:
+  - [x] `GET /conversations`
+  - [x] `POST /conversations`
+  - [x] `GET /conversations/:id`
+  - [x] `DELETE /conversations/:id`
+  - [x] `PATCH /conversations/:id` (rename)
+- [x] Implement message API:
+  - [x] `GET /conversations/:id/messages`
+  - [x] `POST /conversations/:id/messages`
+- [x] Add OpenAPI generation from Zod schemas using @hono/zod-openapi
+- [x] Wire up frontend to API
+- [x] Test creating conversations and messages (stored in DB, no AI response)
 
 ---
 

@@ -3,7 +3,7 @@ import { createFileRoute, Navigate } from '@tanstack/react-router';
 import { ChatHeader } from '@/components/chat/chat-header';
 import { MessageList } from '@/components/chat/message-list';
 import { MessageInput } from '@/components/chat/message-input';
-import { useConversation, useMessages } from '@/hooks/chat';
+import { useConversation, useMessages, useSendMessage } from '@/hooks/chat';
 import type { Message } from '@/lib/api';
 
 export const Route = createFileRoute('/_app/chat/$conversationId')({
@@ -22,40 +22,65 @@ function ChatConversation(): React.JSX.Element {
     isNewChat ? '' : conversationId
   );
 
+  const sendMessage = useSendMessage();
+
   const isLoading = isConversationLoading || isMessagesLoading;
 
-  // Local messages for new chat (before API create)
-  const [localMessages, setLocalMessages] = React.useState<Message[]>([]);
+  // Local optimistic messages (shown before API confirms)
+  const [optimisticMessages, setOptimisticMessages] = React.useState<Message[]>([]);
 
-  // Combine API messages with local messages
+  // Combine API messages with optimistic messages
   const allMessages = React.useMemo(() => {
-    if (isNewChat) {
-      return localMessages;
+    const messages = apiMessages ?? [];
+    // Filter out optimistic messages that now exist in API response
+    const apiMessageIds = new Set(messages.map((m) => m.id));
+    const pendingOptimistic = optimisticMessages.filter((m) => !apiMessageIds.has(m.id));
+    return [...messages, ...pendingOptimistic];
+  }, [apiMessages, optimisticMessages]);
+
+  // Clear optimistic messages when API messages update
+  React.useEffect(() => {
+    if (apiMessages && apiMessages.length > 0) {
+      setOptimisticMessages([]);
     }
-    return [...(apiMessages ?? []), ...localMessages];
-  }, [apiMessages, localMessages, isNewChat]);
+  }, [apiMessages]);
 
   const handleSend = (content: string): void => {
-    const newMessage: Message = {
+    if (isNewChat) {
+      // Should not happen - NewChatPage handles this
+      return;
+    }
+
+    // Create optimistic message for immediate UI feedback
+    const optimisticMessage: Message = {
       id: crypto.randomUUID(),
-      conversationId: isNewChat ? 'pending' : conversationId,
+      conversationId,
       role: 'user',
       content,
       createdAt: new Date().toISOString(),
     };
-    setLocalMessages((prev) => [...prev, newMessage]);
+    setOptimisticMessages((prev) => [...prev, optimisticMessage]);
 
-    // Simulate assistant response (will be replaced with real streaming API)
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: crypto.randomUUID(),
-        conversationId: isNewChat ? 'pending' : conversationId,
-        role: 'assistant',
-        content: `This is a mock response to: "${content}"`,
-        createdAt: new Date().toISOString(),
-      };
-      setLocalMessages((prev) => [...prev, assistantMessage]);
-    }, 500);
+    // Send to API
+    sendMessage.mutate(
+      {
+        conversationId,
+        message: {
+          role: 'user',
+          content,
+        },
+      },
+      {
+        onSuccess: () => {
+          // Clear optimistic message - API invalidation will fetch real message
+          setOptimisticMessages((prev) => prev.filter((m) => m.id !== optimisticMessage.id));
+        },
+        onError: () => {
+          // Remove failed optimistic message
+          setOptimisticMessages((prev) => prev.filter((m) => m.id !== optimisticMessage.id));
+        },
+      }
+    );
   };
 
   // Determine the chat title
@@ -63,7 +88,12 @@ function ChatConversation(): React.JSX.Element {
     ? 'New Chat'
     : (conversation?.title ?? `Chat ${conversationId.slice(0, 8)}...`);
 
-  if (isLoading && !isNewChat) {
+  // Redirect new chat to /chat - should create via NewChatPage
+  if (isNewChat) {
+    return <Navigate to="/chat" />;
+  }
+
+  if (isLoading) {
     return (
       <div className="flex h-full flex-col">
         <ChatHeader title="Loading..." />
@@ -75,7 +105,7 @@ function ChatConversation(): React.JSX.Element {
   }
 
   // Redirect to /chat if conversation doesn't exist
-  if (!isNewChat && !isLoading && !conversation) {
+  if (!conversation) {
     return <Navigate to="/chat" />;
   }
 
@@ -86,7 +116,7 @@ function ChatConversation(): React.JSX.Element {
         {allMessages.length > 0 && <MessageList messages={allMessages} />}
       </div>
       <div className="border-t">
-        <MessageInput onSend={handleSend} />
+        <MessageInput onSend={handleSend} disabled={sendMessage.isPending} />
       </div>
     </div>
   );

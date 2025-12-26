@@ -1,11 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { NewConversation, NewMessage } from '@lome-chat/db';
 import {
   api,
   type Conversation,
   type Message,
   type ConversationsResponse,
   type ConversationResponse,
+  type CreateConversationRequest,
+  type CreateConversationResponse,
+  type UpdateConversationRequest,
+  type UpdateConversationResponse,
+  type DeleteConversationResponse,
+  type CreateMessageRequest,
+  type CreateMessageResponse,
 } from '../lib/api';
 
 // Query key factory
@@ -50,31 +56,100 @@ export function useMessages(conversationId: string): ReturnType<typeof useQuery<
   });
 }
 
-// Mutations (stubs - to be implemented when POST endpoints exist)
+// Mutations
+
+/**
+ * Creates a new conversation, optionally with a first message.
+ */
 export function useCreateConversation(): ReturnType<
-  typeof useMutation<Conversation, Error, NewConversation>
+  typeof useMutation<CreateConversationResponse, Error, CreateConversationRequest>
 > {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (): Promise<Conversation> =>
-      Promise.reject(new Error('API not implemented - enable when POST endpoint exists')),
+    mutationFn: async (data: CreateConversationRequest): Promise<CreateConversationResponse> => {
+      return api.post<CreateConversationResponse>('/conversations', data);
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: chatKeys.conversations() });
     },
   });
 }
 
+/**
+ * Sends a message to a conversation.
+ */
 export function useSendMessage(): ReturnType<
-  typeof useMutation<Message, Error, { conversationId: string; message: NewMessage }>
+  typeof useMutation<
+    CreateMessageResponse,
+    Error,
+    { conversationId: string; message: CreateMessageRequest }
+  >
 > {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (): Promise<Message> =>
-      Promise.reject(new Error('API not implemented - enable when POST endpoint exists')),
+    mutationFn: async ({
+      conversationId,
+      message,
+    }: {
+      conversationId: string;
+      message: CreateMessageRequest;
+    }): Promise<CreateMessageResponse> => {
+      return api.post<CreateMessageResponse>(`/conversations/${conversationId}/messages`, message);
+    },
     onSuccess: (_data, variables) => {
       void queryClient.invalidateQueries({
         queryKey: chatKeys.messages(variables.conversationId),
       });
+      // Also invalidate conversations list to update updatedAt ordering
+      void queryClient.invalidateQueries({ queryKey: chatKeys.conversations() });
+    },
+  });
+}
+
+/**
+ * Deletes a conversation.
+ */
+export function useDeleteConversation(): ReturnType<
+  typeof useMutation<DeleteConversationResponse, Error, string>
+> {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (conversationId: string): Promise<DeleteConversationResponse> => {
+      return api.delete<DeleteConversationResponse>(`/conversations/${conversationId}`);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: chatKeys.conversations() });
+    },
+  });
+}
+
+/**
+ * Updates a conversation (rename).
+ */
+export function useUpdateConversation(): ReturnType<
+  typeof useMutation<
+    UpdateConversationResponse,
+    Error,
+    { conversationId: string; data: UpdateConversationRequest }
+  >
+> {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      conversationId,
+      data,
+    }: {
+      conversationId: string;
+      data: UpdateConversationRequest;
+    }): Promise<UpdateConversationResponse> => {
+      return api.patch<UpdateConversationResponse>(`/conversations/${conversationId}`, data);
+    },
+    onSuccess: (_data, variables) => {
+      // Invalidate both the specific conversation and the list
+      void queryClient.invalidateQueries({
+        queryKey: chatKeys.conversation(variables.conversationId),
+      });
+      void queryClient.invalidateQueries({ queryKey: chatKeys.conversations() });
     },
   });
 }

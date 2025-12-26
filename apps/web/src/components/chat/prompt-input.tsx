@@ -12,6 +12,7 @@ interface PromptInputProps {
   maxLength?: number;
   className?: string;
   rows?: number;
+  disabled?: boolean;
 }
 
 /**
@@ -26,6 +27,7 @@ export function PromptInput({
   maxLength = 2000,
   className,
   rows = 6,
+  disabled = false,
 }: PromptInputProps): React.JSX.Element {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
@@ -33,7 +35,7 @@ export function PromptInput({
   const validLength = Math.min(value.length, maxLength);
   const overflowLength = Math.max(0, value.length - maxLength);
 
-  const canSubmit = value.trim().length > 0 && !isOverLimit;
+  const canSubmit = value.trim().length > 0 && !isOverLimit && !disabled;
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
     onChange(e.target.value);
@@ -65,6 +67,7 @@ export function PromptInput({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           rows={rows}
+          disabled={disabled}
           className={cn(
             'min-h-[150px] resize-none pr-14 pb-10 text-base',
             isOverLimit && 'border-destructive focus-visible:ring-destructive'

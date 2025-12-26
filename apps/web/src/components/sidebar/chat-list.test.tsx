@@ -19,6 +19,19 @@ vi.mock('@tanstack/react-router', () => ({
     </a>
   ),
   useParams: () => ({ conversationId: undefined }),
+  useNavigate: () => vi.fn(),
+}));
+
+// Mock chat hooks used by ChatItem
+vi.mock('@/hooks/chat', () => ({
+  useDeleteConversation: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
+  useUpdateConversation: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
 }));
 
 describe('ChatList', () => {
@@ -54,7 +67,10 @@ describe('ChatList', () => {
   it('highlights active conversation', () => {
     render(<ChatList conversations={mockConversations} activeId="conv-2" />);
     const links = screen.getAllByTestId('chat-link');
-    expect(links[1]).toHaveClass('bg-sidebar-border');
+    // The active styling is on the parent wrapper div, not the link
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const activeLink = links[1]!;
+    expect(activeLink.parentElement).toHaveClass('bg-sidebar-border');
   });
 
   describe('collapsed state', () => {

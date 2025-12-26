@@ -10,6 +10,7 @@ import { getGreeting } from '@/lib/greetings';
 interface NewChatPageProps {
   onSend: (message: string) => void;
   isAuthenticated: boolean;
+  isLoading?: boolean;
   className?: string;
 }
 
@@ -20,6 +21,7 @@ interface NewChatPageProps {
 export function NewChatPage({
   onSend,
   isAuthenticated,
+  isLoading = false,
   className,
 }: NewChatPageProps): React.JSX.Element {
   const [inputValue, setInputValue] = React.useState('');
@@ -88,6 +90,7 @@ export function NewChatPage({
             placeholder="Ask me anything..."
             maxLength={2000}
             rows={6}
+            disabled={isLoading}
           />
         </div>
 

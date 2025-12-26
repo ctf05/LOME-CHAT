@@ -8,8 +8,8 @@ test.describe('Web App Smoke Tests', () => {
 
   test('/chat renders new chat page', async ({ page }) => {
     await page.goto('/chat');
-    // New chat page should show the greeting and prompt input
-    await expect(page.getByRole('textbox')).toBeVisible();
+    // New chat page should show the greeting and prompt input (specific to main chat textarea)
+    await expect(page.getByRole('textbox', { name: 'Ask me anything...' })).toBeVisible();
   });
 
   test('/chat/:id shows conversation view', async ({ page }) => {

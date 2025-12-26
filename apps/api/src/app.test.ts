@@ -92,7 +92,7 @@ describe('createApp', () => {
       expect(body).toEqual({ error: 'Unauthorized' });
     });
 
-    it('returns 404 for POST /conversations (not implemented)', async () => {
+    it('returns 401 for POST /conversations without auth', async () => {
       const app = createApp();
       const res = await app.request(
         '/conversations',
@@ -103,10 +103,12 @@ describe('createApp', () => {
         }
       );
 
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(401);
+      const body = await res.json();
+      expect(body).toEqual({ error: 'Unauthorized' });
     });
 
-    it('returns 404 for DELETE /conversations/:id (not implemented)', async () => {
+    it('returns 401 for DELETE /conversations/:id without auth', async () => {
       const app = createApp();
       const res = await app.request(
         '/conversations/123',
@@ -117,10 +119,12 @@ describe('createApp', () => {
         }
       );
 
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(401);
+      const body = await res.json();
+      expect(body).toEqual({ error: 'Unauthorized' });
     });
 
-    it('returns 404 for PATCH /conversations/:id (not implemented)', async () => {
+    it('returns 401 for PATCH /conversations/:id without auth', async () => {
       const app = createApp();
       const res = await app.request(
         '/conversations/123',
@@ -131,7 +135,9 @@ describe('createApp', () => {
         }
       );
 
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(401);
+      const body = await res.json();
+      expect(body).toEqual({ error: 'Unauthorized' });
     });
   });
 

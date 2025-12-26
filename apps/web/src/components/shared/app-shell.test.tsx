@@ -13,6 +13,14 @@ vi.mock('@/hooks/chat', () => ({
     isError: false,
     error: null,
   })),
+  useDeleteConversation: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
+  useUpdateConversation: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
 }));
 
 // Mock router for Sidebar children

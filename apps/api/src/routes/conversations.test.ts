@@ -37,6 +37,7 @@ interface Conversation {
 
 interface Message {
   id: string;
+  conversationId: string;
   role: string;
   content: string;
   model?: string | null;
@@ -49,6 +50,23 @@ interface ConversationsListResponse {
 interface ConversationDetailResponse {
   conversation: Conversation;
   messages: Message[];
+}
+
+interface CreateConversationResponse {
+  conversation: Conversation;
+  message?: Message;
+}
+
+interface UpdateConversationResponse {
+  conversation: Conversation;
+}
+
+interface DeleteConversationResponse {
+  deleted: boolean;
+}
+
+interface CreateMessageResponse {
+  message: Message;
 }
 
 describe('conversations routes', () => {
@@ -285,6 +303,470 @@ describe('conversations routes', () => {
       expect(userMsg?.content).toBe('Hello');
       expect(assistantMsg?.content).toBe('Hi there!');
       expect(assistantMsg?.model).toBe('gpt-4');
+    });
+  });
+
+  describe('POST /conversations', () => {
+    it('returns 401 when not authenticated', async () => {
+      const res = await app.request('/conversations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+
+      expect(res.status).toBe(401);
+      const json = (await res.json()) as ErrorResponse;
+      expect(json.error).toBe('Unauthorized');
+    });
+
+    it('creates conversation with empty title by default', async () => {
+      const res = await app.request('/conversations', {
+        method: 'POST',
+        headers: {
+          Cookie: authCookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
+      });
+
+      expect(res.status).toBe(201);
+      const json = (await res.json()) as CreateConversationResponse;
+      expect(json.conversation).toBeDefined();
+      expect(json.conversation.title).toBe('');
+      expect(json.conversation.userId).toBe(testUserId);
+      expect(json.message).toBeUndefined();
+
+      // Track for cleanup
+      createdConversationIds.push(json.conversation.id);
+    });
+
+    it('creates conversation with provided title', async () => {
+      const res = await app.request('/conversations', {
+        method: 'POST',
+        headers: {
+          Cookie: authCookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: 'My Chat' }),
+      });
+
+      expect(res.status).toBe(201);
+      const json = (await res.json()) as CreateConversationResponse;
+      expect(json.conversation.title).toBe('My Chat');
+
+      // Track for cleanup
+      createdConversationIds.push(json.conversation.id);
+    });
+
+    it('creates conversation with first message', async () => {
+      const res = await app.request('/conversations', {
+        method: 'POST',
+        headers: {
+          Cookie: authCookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: 'Chat with message',
+          firstMessage: { content: 'Hello AI!' },
+        }),
+      });
+
+      expect(res.status).toBe(201);
+      const json = (await res.json()) as CreateConversationResponse;
+      expect(json.conversation.title).toBe('Chat with message');
+      expect(json.message).toBeDefined();
+      expect(json.message?.content).toBe('Hello AI!');
+      expect(json.message?.role).toBe('user');
+
+      // Track for cleanup
+      createdConversationIds.push(json.conversation.id);
+      if (json.message) createdMessageIds.push(json.message.id);
+    });
+  });
+
+  describe('DELETE /conversations/:id', () => {
+    it('returns 401 when not authenticated', async () => {
+      const convId = createdConversationIds[0];
+      if (!convId) throw new Error('Test setup failed: no conversation created');
+      const res = await app.request(`/conversations/${convId}`, {
+        method: 'DELETE',
+      });
+
+      expect(res.status).toBe(401);
+      const json = (await res.json()) as ErrorResponse;
+      expect(json.error).toBe('Unauthorized');
+    });
+
+    it('returns 404 for non-existent conversation', async () => {
+      const res = await app.request('/conversations/non-existent-id', {
+        method: 'DELETE',
+        headers: { Cookie: authCookie },
+      });
+
+      expect(res.status).toBe(404);
+      const json = (await res.json()) as ErrorResponse;
+      expect(json.error).toBe('Conversation not found');
+    });
+
+    it('deletes conversation and returns success', async () => {
+      // Create a conversation to delete
+      const createRes = await app.request('/conversations', {
+        method: 'POST',
+        headers: {
+          Cookie: authCookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: 'To be deleted' }),
+      });
+      const createJson = (await createRes.json()) as CreateConversationResponse;
+      const convId = createJson.conversation.id;
+
+      // Delete it
+      const res = await app.request(`/conversations/${convId}`, {
+        method: 'DELETE',
+        headers: { Cookie: authCookie },
+      });
+
+      expect(res.status).toBe(200);
+      const json = (await res.json()) as DeleteConversationResponse;
+      expect(json.deleted).toBe(true);
+
+      // Verify it's gone
+      const getRes = await app.request(`/conversations/${convId}`, {
+        headers: { Cookie: authCookie },
+      });
+      expect(getRes.status).toBe(404);
+    });
+  });
+
+  describe('PATCH /conversations/:id', () => {
+    it('returns 401 when not authenticated', async () => {
+      const convId = createdConversationIds[0];
+      if (!convId) throw new Error('Test setup failed: no conversation created');
+      const res = await app.request(`/conversations/${convId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: 'New title' }),
+      });
+
+      expect(res.status).toBe(401);
+      const json = (await res.json()) as ErrorResponse;
+      expect(json.error).toBe('Unauthorized');
+    });
+
+    it('returns 404 for non-existent conversation', async () => {
+      const res = await app.request('/conversations/non-existent-id', {
+        method: 'PATCH',
+        headers: {
+          Cookie: authCookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: 'New title' }),
+      });
+
+      expect(res.status).toBe(404);
+      const json = (await res.json()) as ErrorResponse;
+      expect(json.error).toBe('Conversation not found');
+    });
+
+    it('returns 400 for empty title', async () => {
+      const convId = createdConversationIds[0];
+      if (!convId) throw new Error('Test setup failed: no conversation created');
+      const res = await app.request(`/conversations/${convId}`, {
+        method: 'PATCH',
+        headers: {
+          Cookie: authCookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: '' }),
+      });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('returns 400 for title exceeding max length', async () => {
+      const convId = createdConversationIds[0];
+      if (!convId) throw new Error('Test setup failed: no conversation created');
+      const longTitle = 'a'.repeat(256);
+      const res = await app.request(`/conversations/${convId}`, {
+        method: 'PATCH',
+        headers: {
+          Cookie: authCookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: longTitle }),
+      });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('updates conversation title', async () => {
+      const convId = createdConversationIds[0];
+      if (!convId) throw new Error('Test setup failed: no conversation created');
+      const res = await app.request(`/conversations/${convId}`, {
+        method: 'PATCH',
+        headers: {
+          Cookie: authCookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: 'Updated title' }),
+      });
+
+      expect(res.status).toBe(200);
+      const json = (await res.json()) as UpdateConversationResponse;
+      expect(json.conversation.title).toBe('Updated title');
+      expect(json.conversation.id).toBe(convId);
+    });
+  });
+
+  describe('POST /conversations/:id/messages', () => {
+    it('returns 401 when not authenticated', async () => {
+      const convId = createdConversationIds[0];
+      if (!convId) throw new Error('Test setup failed: no conversation created');
+      const res = await app.request(`/conversations/${convId}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: 'user', content: 'Hello' }),
+      });
+
+      expect(res.status).toBe(401);
+      const json = (await res.json()) as ErrorResponse;
+      expect(json.error).toBe('Unauthorized');
+    });
+
+    it('returns 404 for non-existent conversation', async () => {
+      const res = await app.request('/conversations/non-existent-id/messages', {
+        method: 'POST',
+        headers: {
+          Cookie: authCookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ role: 'user', content: 'Hello' }),
+      });
+
+      expect(res.status).toBe(404);
+      const json = (await res.json()) as ErrorResponse;
+      expect(json.error).toBe('Conversation not found');
+    });
+
+    it('returns 400 for invalid role', async () => {
+      const convId = createdConversationIds[0];
+      if (!convId) throw new Error('Test setup failed: no conversation created');
+      const res = await app.request(`/conversations/${convId}/messages`, {
+        method: 'POST',
+        headers: {
+          Cookie: authCookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ role: 'invalid', content: 'Hello' }),
+      });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('returns 400 for empty content', async () => {
+      const convId = createdConversationIds[0];
+      if (!convId) throw new Error('Test setup failed: no conversation created');
+      const res = await app.request(`/conversations/${convId}/messages`, {
+        method: 'POST',
+        headers: {
+          Cookie: authCookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ role: 'user', content: '' }),
+      });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('creates message with user role', async () => {
+      const convId = createdConversationIds[0];
+      if (!convId) throw new Error('Test setup failed: no conversation created');
+      const res = await app.request(`/conversations/${convId}/messages`, {
+        method: 'POST',
+        headers: {
+          Cookie: authCookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ role: 'user', content: 'Test message' }),
+      });
+
+      expect(res.status).toBe(201);
+      const json = (await res.json()) as CreateMessageResponse;
+      expect(json.message).toBeDefined();
+      expect(json.message.role).toBe('user');
+      expect(json.message.content).toBe('Test message');
+      expect(json.message.conversationId).toBe(convId);
+
+      // Track for cleanup
+      createdMessageIds.push(json.message.id);
+    });
+
+    it('creates message with model field', async () => {
+      const convId = createdConversationIds[0];
+      if (!convId) throw new Error('Test setup failed: no conversation created');
+      const res = await app.request(`/conversations/${convId}/messages`, {
+        method: 'POST',
+        headers: {
+          Cookie: authCookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          role: 'assistant',
+          content: 'I am an AI',
+          model: 'claude-3',
+        }),
+      });
+
+      expect(res.status).toBe(201);
+      const json = (await res.json()) as CreateMessageResponse;
+      expect(json.message.role).toBe('assistant');
+      expect(json.message.model).toBe('claude-3');
+
+      // Track for cleanup
+      createdMessageIds.push(json.message.id);
+    });
+  });
+
+  describe('Cross-user authorization', () => {
+    let otherUserId: string;
+    let otherUserCookie: string;
+    const OTHER_EMAIL = `test-other-${String(Date.now())}@example.com`;
+    const OTHER_PASSWORD = 'OtherPassword123!';
+
+    beforeAll(async () => {
+      // Create another user (user B)
+      const signupRes = await app.request('/api/auth/sign-up/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: OTHER_EMAIL,
+          password: OTHER_PASSWORD,
+          name: 'Other User',
+        }),
+      });
+
+      if (!signupRes.ok) {
+        throw new Error(`Other user signup failed: ${await signupRes.text()}`);
+      }
+
+      const signupData = (await signupRes.json()) as SignupResponse;
+      otherUserId = signupData.user?.id ?? '';
+      if (!otherUserId) {
+        throw new Error('Other user signup failed - no user ID returned');
+      }
+
+      // Mark email as verified
+      await db.update(users).set({ emailVerified: true }).where(eq(users.id, otherUserId));
+
+      // Sign in as user B
+      const signinRes = await app.request('/api/auth/sign-in/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: OTHER_EMAIL,
+          password: OTHER_PASSWORD,
+        }),
+      });
+
+      if (!signinRes.ok) {
+        throw new Error(`Other user signin failed: ${await signinRes.text()}`);
+      }
+
+      const setCookie = signinRes.headers.get('set-cookie');
+      if (setCookie) {
+        otherUserCookie = setCookie.split(';')[0] ?? '';
+      } else {
+        throw new Error('Other user signin succeeded but no session cookie returned');
+      }
+    });
+
+    afterAll(async () => {
+      // Clean up user B
+      if (otherUserId) {
+        await db.delete(sessions).where(eq(sessions.userId, otherUserId));
+        await db.delete(accounts).where(eq(accounts.userId, otherUserId));
+        await db.delete(users).where(eq(users.id, otherUserId));
+      }
+    });
+
+    it('returns 404 when user B tries to GET user A conversation', async () => {
+      const convId = createdConversationIds[0];
+      if (!convId) throw new Error('Test setup failed: no conversation created');
+
+      const res = await app.request(`/conversations/${convId}`, {
+        headers: { Cookie: otherUserCookie },
+      });
+
+      expect(res.status).toBe(404);
+      const json = (await res.json()) as ErrorResponse;
+      expect(json.error).toBe('Conversation not found');
+    });
+
+    it('returns 404 when user B tries to DELETE user A conversation', async () => {
+      const convId = createdConversationIds[0];
+      if (!convId) throw new Error('Test setup failed: no conversation created');
+
+      const res = await app.request(`/conversations/${convId}`, {
+        method: 'DELETE',
+        headers: { Cookie: otherUserCookie },
+      });
+
+      expect(res.status).toBe(404);
+      const json = (await res.json()) as ErrorResponse;
+      expect(json.error).toBe('Conversation not found');
+    });
+
+    it('returns 404 when user B tries to PATCH user A conversation', async () => {
+      const convId = createdConversationIds[0];
+      if (!convId) throw new Error('Test setup failed: no conversation created');
+
+      const res = await app.request(`/conversations/${convId}`, {
+        method: 'PATCH',
+        headers: {
+          Cookie: otherUserCookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: 'Hacked title' }),
+      });
+
+      expect(res.status).toBe(404);
+      const json = (await res.json()) as ErrorResponse;
+      expect(json.error).toBe('Conversation not found');
+    });
+
+    it('returns 404 when user B tries to POST message to user A conversation', async () => {
+      const convId = createdConversationIds[0];
+      if (!convId) throw new Error('Test setup failed: no conversation created');
+
+      const res = await app.request(`/conversations/${convId}/messages`, {
+        method: 'POST',
+        headers: {
+          Cookie: otherUserCookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ role: 'user', content: 'Unauthorized message' }),
+      });
+
+      expect(res.status).toBe(404);
+      const json = (await res.json()) as ErrorResponse;
+      expect(json.error).toBe('Conversation not found');
+    });
+
+    it('user B only sees their own conversations in list', async () => {
+      // User B should not see user A's conversations
+      const res = await app.request('/conversations', {
+        headers: { Cookie: otherUserCookie },
+      });
+
+      expect(res.status).toBe(200);
+      const json = (await res.json()) as ConversationsListResponse;
+
+      // User B has no conversations, should be empty
+      // (or only their own if they created any)
+      const userAConvIds = createdConversationIds;
+      const hasUserAConversations = json.conversations.some((c) => userAConvIds.includes(c.id));
+      expect(hasUserAConversations).toBe(false);
     });
   });
 });

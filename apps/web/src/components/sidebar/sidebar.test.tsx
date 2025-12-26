@@ -8,6 +8,14 @@ import { useUIStore } from '@/stores/ui';
 // Mock the chat hooks
 vi.mock('@/hooks/chat', () => ({
   useConversations: vi.fn(),
+  useDeleteConversation: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
+  useUpdateConversation: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
 }));
 
 import { useConversations } from '@/hooks/chat';

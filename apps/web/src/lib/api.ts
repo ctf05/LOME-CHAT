@@ -1,4 +1,32 @@
-import { frontendEnvSchema } from '@lome-chat/shared';
+import {
+  frontendEnvSchema,
+  type ConversationResponse,
+  type MessageResponse,
+  type ListConversationsResponse,
+  type GetConversationResponse,
+  type CreateConversationRequest,
+  type CreateConversationResponse,
+  type UpdateConversationRequest,
+  type UpdateConversationResponse,
+  type DeleteConversationResponse,
+  type CreateMessageRequest,
+  type CreateMessageResponse,
+} from '@lome-chat/shared';
+
+// Re-export types for consumers
+export type {
+  ConversationResponse as Conversation,
+  MessageResponse as Message,
+  ListConversationsResponse as ConversationsResponse,
+  GetConversationResponse as ConversationResponse,
+  CreateConversationRequest,
+  CreateConversationResponse,
+  UpdateConversationRequest,
+  UpdateConversationResponse,
+  DeleteConversationResponse,
+  CreateMessageRequest,
+  CreateMessageResponse,
+};
 
 const env = frontendEnvSchema.parse({
   VITE_API_URL: import.meta.env['VITE_API_URL'] as unknown,
@@ -80,30 +108,3 @@ export const api = {
     return request<T>(path, { method: 'DELETE' });
   },
 };
-
-// Type definitions for API responses
-export interface Conversation {
-  id: string;
-  userId: string;
-  title: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Message {
-  id: string;
-  conversationId: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  model?: string | null;
-  createdAt: string;
-}
-
-export interface ConversationsResponse {
-  conversations: Conversation[];
-}
-
-export interface ConversationResponse {
-  conversation: Conversation;
-  messages: Message[];
-}

@@ -22,6 +22,18 @@ vi.mock('@tanstack/react-router', () => ({
   useParams: () => ({ conversationId: undefined }),
 }));
 
+// Mock chat hooks used by ChatItem
+vi.mock('@/hooks/chat', () => ({
+  useDeleteConversation: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
+  useUpdateConversation: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
+}));
+
 describe('SidebarContent', () => {
   const mockConversations = [
     { id: 'conv-1', title: 'Test Conversation', updatedAt: new Date().toISOString() },
